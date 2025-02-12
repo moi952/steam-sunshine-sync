@@ -48,22 +48,17 @@
     "test": "react-scripts test",
     "postinstall": "electron-builder install-app-deps",
     "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3000 && tsc -p electron && electron .\"",
-    "electron:build": "yarn build && tsc -p electron && electron-builder && yarn zipPortable",
+    "electron:build": "yarn build && tsc -p electron && electron-builder",
     "eject": "react-scripts eject",
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "eslint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "zipPortable": "powershell -Command \"if ($env:OS -eq 'Windows_NT') { Compress-Archive -Path dist/win-unpacked/* -DestinationPath dist/${env:npm_package_build_productName}-${env:npm_package_version}-win-x64-portable.zip } elseif ($env:OS -eq 'Darwin') { Compress-Archive -Path dist/mac-unpacked/* -DestinationPath dist/${env:npm_package_build_productName}-${env:npm_package_version}-mac-portable.zip } elseif ($env:OS -eq 'Linux') { Compress-Archive -Path dist/linux-unpacked/* -DestinationPath dist/${env:npm_package_build_productName}-${env:npm_package_version}-linux-portable.zip } else { Write-Host 'Unsupported OS' }\"",
-    "electron:build:windows": "yarn build && tsc -p electron && electron-builder --windows",
+    "update-release": "node .github/scripts/update-version.js",
     "zipPortable:win": "powershell -Command \"if ($env:OS -eq 'Windows_NT') { Compress-Archive -Path dist/win-unpacked/* -DestinationPath dist/$${env:npm_package_build_productName}-$${env:npm_package_version}-win-x64-portable.zip } else { Write-Host 'Unsupported OS' }\"",
-    "electron:build:mac": "yarn build && tsc -p electron && electron-builder --mac",
-    "zipPortable:mac": "powershell -Command \"if ($env:OS -eq 'Darwin') { Compress-Archive -Path dist/mac-unpacked/* -DestinationPath dist/$${env:npm_package_build_productName}-$${env:npm_package_version}-mac-portable.zip } else { Write-Host 'Unsupported OS' }\"",
-    "electron:build:linux": "yarn build && tsc -p electron && electron-builder --linux",
-    "zipPortable:linux": "powershell -Command \"if ($env:OS -eq 'Linux') { Compress-Archive -Path dist/linux-unpacked/* -DestinationPath dist/$${env:npm_package_build_productName}-$${env:npm_package_version}-linux-portable.zip } else { Write-Host 'Unsupported OS' }\"",
     "prepare": "husky"
   },
   "build": {
     "appId": "com.example.steam-sunshine-sync",
-    "productName": "Steam Sunshine Sync",
+    "productName": "Steam sunshine sync",
     "extends": null,
     "files": [
       "build/**/*"
@@ -77,20 +72,20 @@
         "nsis",
         "portable"
       ],
-      "artifactName": "${productName} ${version}.${ext}"
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "mac": {
       "target": [
         "dmg"
       ],
-      "artifactName": "${productName} ${version}.${ext}"
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "linux": {
       "target": [
         "AppImage",
         "deb"
       ],
-      "artifactName": "${productName} ${version}.${ext}"
+      "artifactName": "${productName}-${version}.${ext}"
     },
     "nsis": {
       "oneClick": false,
@@ -98,7 +93,7 @@
       "perMachine": false
     },
     "portable": {
-      "artifactName": "${productName} ${version}-portable.${ext}",
+      "artifactName": "${productName}-${version}-portable.${ext}",
       "useZip": true
     }
   },

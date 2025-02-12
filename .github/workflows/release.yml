@@ -8,6 +8,10 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      version:
+        description: "New version"
+        required: true
 
 jobs:
   build:
@@ -18,8 +22,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup  Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -30,21 +36,32 @@ jobs:
       - name: Install dependencies
         run: yarn install --network-timeout 1000000
 
+      - name: Configure Git identity
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Update version and create tag
+        if: github.event_name == 'workflow_dispatch'
+        run: yarn update-release ${{ github.event.inputs.version }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
       - name: Build project (Windows)
         if: runner.os == 'Windows'
-        run: yarn electron:build:windows
+        run: yarn electron:build --windows
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Build project (macOS)
         if: runner.os == 'macOS'
-        run: yarn run electron:build:mac
+        run: yarn run electron:build --mac
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Build project (Linux)
         if: runner.os == 'Linux'
-        run: yarn run electron:build:linux
+        run: yarn run electron:build --linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
