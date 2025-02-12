@@ -15,16 +15,16 @@ if (!versionType) {
 }
 
 // Determine the new version based on the version type
-let newVersion;
+let newVersion = packageJson.version;
 switch (versionType) {
   case "patch":
-    newVersion = semver.inc(packageJson.version, "patch");
+    newVersion = semver.inc(newVersion, "patch");
     break;
   case "minor":
-    newVersion = semver.inc(packageJson.version, "minor");
+    newVersion = semver.inc(newVersion, "minor");
     break;
   case "major":
-    newVersion = semver.inc(packageJson.version, "major");
+    newVersion = semver.inc(newVersion, "major");
     break;
   default:
     console.error("Invalid version type. Use 'patch', 'minor', or 'major'.");
@@ -42,13 +42,13 @@ if (!semver.valid(newVersion)) {
   process.exit(1);
 }
 
-// Check if the tag already exists
+// Check if the tag already exists in the remote repository
 try {
-  execSync(`git rev-parse v${newVersion}^{tag}`);
-  console.error(`Tag v${newVersion} already exists.`);
+  execSync(`git ls-remote --tags origin | grep "refs/tags/v${newVersion}$"`);
+  console.error(`Tag v${newVersion} already exists in the remote repository.`);
   process.exit(1);
 } catch (error) {
-  // Tag does not exist, proceed
+  // Tag does not exist in the remote repository, proceed
 }
 
 // Update the version in package.json
