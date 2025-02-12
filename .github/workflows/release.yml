@@ -7,7 +7,12 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Update Version and Create Tag"]
+    types:
+      - completed
+    conclusions:
+      - successs
 
 jobs:
   build:

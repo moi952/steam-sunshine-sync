@@ -8,16 +8,15 @@ on:
   workflow_dispatch:
     inputs:
       version_type:
-        description: "Type of version update"
+        description: "Type de mise à jour de version: patch (bug fixes), minor (nouvelles fonctionnalités), major (breaking changes)"
         required: true
         type: choice
         options:
           - patch
           - minor
           - major
-        subtitle: "Select the type of version update: patch (bug fixes), minor (new features), major (breaking changes)"
       pre_release_type:
-        description: "Type of pre-release (optional)"
+        description: "Type de pré-release (facultatif) : alpha (tests initiaux), beta (presque fini), rc (release candidate)"
         required: false
         type: choice
         options:
@@ -25,7 +24,6 @@ on:
           - alpha
           - beta
           - rc
-        subtitle: "Select the type of pre-release (optional): alpha (initial testing), beta (feature complete), rc (release candidate)"
 
 jobs:
   update-version:
@@ -53,11 +51,3 @@ jobs:
         run: node .github/scripts/update-version.js ${{ github.event.inputs.version_type }} ${{ github.event.inputs.pre_release_type }}
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
-      # - name: Trigger release workflow
-      #   run: |
-      #     curl -X POST \
-      #     -H "Accept: application/vnd.github.v3+json" \
-      #     -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
-      #     https://api.github.com/repos/${{ github.repository }}/actions/workflows/release.yml/dispatches \
-      #     -d '{"ref":"main"}'
