@@ -11,8 +11,7 @@ on:
     workflows: ["Update Version and Create Tag"]
     types:
       - completed
-    conclusions:
-      - successs
+    status: success
 
 jobs:
   build:
@@ -89,9 +88,14 @@ jobs:
           name: "Release ${{ github.ref_name }}"
           prerelease: ${{ env.PRE_RELEASE }}
 
+      - name: Get the last tag
+        id: get_tag
+        run: echo "tag=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ env.tag }}
           files: |
             dist/*.exe
             dist/*.dmg
