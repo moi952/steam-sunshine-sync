@@ -7,11 +7,6 @@ on:
   push:
     tags:
       - "v*"
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "New version"
-        required: true
 
 jobs:
   build:
@@ -35,17 +30,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --network-timeout 1000000
-
-      - name: Configure Git identity
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-
-      - name: Update version and create tag
-        if: github.event_name == 'workflow_dispatch'
-        run: yarn update-release ${{ github.event.inputs.version }}
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Build project (Windows)
         if: runner.os == 'Windows'

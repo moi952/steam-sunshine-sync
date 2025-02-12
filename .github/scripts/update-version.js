@@ -5,23 +5,40 @@ const semver = require("semver");
 // Read the current package.json
 const packageJson = JSON.parse(fs.readFileSync("package.json", "utf8"));
 
-// Get the new version from the input
-const newVersion = process.argv[2];
+// Get the version type and pre-release type from the input
+const versionType = process.argv[2];
+const preReleaseType = process.argv[3] || "";
 
-if (!newVersion) {
-  console.error("Please provide a new version as an argument.");
+if (!versionType) {
+  console.error("Please provide a version type as an argument (patch, minor, major).");
   process.exit(1);
+}
+
+// Determine the new version based on the version type
+let newVersion;
+switch (versionType) {
+  case "patch":
+    newVersion = semver.inc(packageJson.version, "patch");
+    break;
+  case "minor":
+    newVersion = semver.inc(packageJson.version, "minor");
+    break;
+  case "major":
+    newVersion = semver.inc(packageJson.version, "major");
+    break;
+  default:
+    console.error("Invalid version type. Use 'patch', 'minor', or 'major'.");
+    process.exit(1);
+}
+
+// Add pre-release type if specified
+if (preReleaseType) {
+  newVersion = `${newVersion}-${preReleaseType}.0`;
 }
 
 // Check if the new version is valid
 if (!semver.valid(newVersion)) {
   console.error("Invalid version format.");
-  process.exit(1);
-}
-
-// Check if the new version is less than or equal to the current version
-if (semver.lte(newVersion, packageJson.version)) {
-  console.error("New version must be greater than the current version.");
   process.exit(1);
 }
 
