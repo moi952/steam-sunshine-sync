@@ -1,0 +1,38 @@
+{
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "languageFr": "Français",
+    "languageEn": "Anglais",
+    "steamId": "ID Steam",
+    "steamPath": "Chemin Steam",
+    "sunshinePath": "Chemin Sunshine",
+    "save": "Sauvegarder",
+    "scanning": "Analyse en cours...",
+    "detectedSteamPath": "Chemin Steam détecté : {{path}}",
+    "noSteamPath": "Chemin Steam non détecté.",
+    "detectedSunshinePath": "Chemin Sunshine détecté : {{path}}",
+    "noSunshinePath": "Chemin Sunshine non détecté.",
+    "detectedSteamUsers": "Utilisateurs Steam détectés : {{users}}",
+    "noSteamUsers": "Aucun utilisateur Steam détecté.",
+    "manuallySelectedPath": "Chemin sélectionné manuellement.",
+    "themeColor": "Couleur du theme",
+    "themeLight": "Lumineux",
+    "themeDark": "Sombre",
+    "themeSystem": "Système"
+  },
+  "home": {
+    "steamGamesList": "Liste des Jeux Steam",
+    "scanGames": "Scanner les jeux",
+    "addAllGames": "Ajouter tous les jeux",
+    "clickScanGames": "Cliquez sur \"Scanner les jeux\" pour commencer.",
+    "successAddedGames": "Successfully added",
+    "gamesToSunshine": "Jeux pour Sunshine",
+    "errorAfterAdding": "Erreur après l'ajout",
+    "steamGames": "Jeux Steam",
+    "nonSteamGames": "Jeux non Steam",
+    "noNonSteamGames": "Aucun jeu non Steam trouvé.",
+    "steamPathOrIdNotSet": "Le chemin Steam ou l'ID Steam n'est pas défini.",
+    "games": "games"
+  }
+}
