@@ -66,6 +66,5 @@ execSync(`git tag v${newVersion}`);
 
 // Push changes and tag to the remote repository
 execSync("git push origin main --tags");
-console.log("cool");
 
 console.log(`Version ${newVersion} updated successfully.`);
