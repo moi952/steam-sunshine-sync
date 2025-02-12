@@ -65,6 +65,8 @@ execSync(`git commit -m "chore(release): ${newVersion}"`);
 execSync(`git tag v${newVersion}`);
 
 // Push changes and tag to the remote repository
-execSync("git push origin main --tags");
+execSync(
+  `git push https://${process.env.GH_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git main --tags`,
+);
 
 console.log(`Version ${newVersion} updated successfully.`);
