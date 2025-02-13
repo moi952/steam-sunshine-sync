@@ -41,8 +41,8 @@ jobs:
           fi
           echo "Determined pre_release: $PRE_RELEASE"
           # Defines the outputs of the job for reuse in the job build
-          echo "::set-output name=tag::$TAG_NAME"
-          echo "::set-output name=pre_release::$PRE_RELEASE"
+          echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "pre_release=$PRE_RELEASE" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         id: create_release
