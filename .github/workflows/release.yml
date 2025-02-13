@@ -1,0 +1,107 @@
+name: Release
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+  # workflow_run:
+  #   workflows: ["Update Version and Create Tag"]
+  #   types:
+  #     - completed
+  #   conclusions:
+  #     - success
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup  Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install dependencies
+        run: yarn install --network-timeout 1000000
+
+      - name: Build project (Windows)
+        if: runner.os == 'Windows'
+        run: yarn electron:build --windows
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Build project (macOS)
+        if: runner.os == 'macOS'
+        run: yarn run electron:build --mac
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Build project (Linux)
+        if: runner.os == 'Linux'
+        run: yarn run electron:build --linux
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get the last tag
+        id: get_tag
+        shell: bash
+        run: echo "TAG_NAME=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+
+      - name: Determine if pre-release
+        id: pre_release_check
+        run: |
+          if [[ "$TAG_NAME" == *"alpha"* || "$TAG_NAME" == *"beta"* || "$TAG_NAME" == *"rc"* ]]; then
+            echo "PRE_RELEASE=true" >> $GITHUB_ENV
+          else
+            echo "PRE_RELEASE=false" >> $GITHUB_ENV
+          fi
+        shell: bash
+        if: runner.os != 'Windows'
+
+      - name: Determine if pre-release (Windows)
+        id: pre_release_check_windows
+        run: |
+          if ($TAG_NAME -match 'alpha' -or $TAG_NAME -match 'beta' -or $TAG_NAME -match 'rc') {
+            echo "PRE_RELEASE=true" >> $env:GITHUB_ENV
+          } else {
+            echo "PRE_RELEASE=false" >> $env:GITHUB_ENV
+          }
+        shell: pwsh
+        if: runner.os == 'Windows'
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: "Release ${{ env.TAG_NAME }}"
+          prerelease: ${{ env.PRE_RELEASE }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          files: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.tar.xz
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}

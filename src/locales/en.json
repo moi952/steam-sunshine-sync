@@ -1,0 +1,38 @@
+{
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "languageFr": "French",
+    "languageEn": "English",
+    "steamId": "Steam ID",
+    "steamPath": "Steam Path",
+    "sunshinePath": "Sunshine Path",
+    "save": "Save",
+    "scanning": "Scanning...",
+    "detectedSteamPath": "Detected Steam Path: {{path}}",
+    "noSteamPath": "Steam Path not detected.",
+    "detectedSunshinePath": "Detected Sunshine Path: {{path}}",
+    "noSunshinePath": "Sunshine Path not detected.",
+    "detectedSteamUsers": "Detected Steam Users: {{users}}",
+    "noSteamUsers": "No Steam users detected.",
+    "manuallySelectedPath": "Manually selected path.",
+    "themeColor": "Theme color",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
+  },
+  "home": {
+    "steamGamesList": "Steam Games List",
+    "scanGames": "Scan Games",
+    "addAllGames": "Add All Games",
+    "clickScanGames": "Click \"Scan Games\" to start.",
+    "successAddedGames": "Successfully added",
+    "gamesToSunshine": "games to Sunshine",
+    "errorAfterAdding": "Error after adding",
+    "steamGames": "Steam Games",
+    "nonSteamGames": "Non-Steam Games",
+    "noNonSteamGames": "No non-Steam games found.",
+    "steamPathOrIdNotSet": "Steam path or Steam ID is not set.",
+    "games": "games"
+  }
+}

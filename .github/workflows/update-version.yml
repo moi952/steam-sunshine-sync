@@ -1,0 +1,53 @@
+name: Update Version and Create Tag
+
+permissions:
+  contents: write
+  actions: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Type de mise à jour de version: patch (bug fixes), minor (nouvelles fonctionnalités), major (breaking changes)"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      pre_release_type:
+        description: "Type de pré-release (facultatif) : alpha (tests initiaux), beta (presque fini), rc (release candidate)"
+        required: false
+        type: choice
+        options:
+          - ""
+          - alpha
+          - beta
+          - rc
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm install semver --legacy-peer-deps
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Update version and create tag
+        run: node .github/scripts/update-version.js ${{ github.event.inputs.version_type }} ${{ github.event.inputs.pre_release_type }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
