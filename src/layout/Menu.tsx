@@ -1,7 +1,16 @@
 import React from "react";
 import { Box, List, ListItemButton, ListItemIcon } from "@mui/material";
-import { Home, Settings, DarkMode, LightMode, BrightnessAuto } from "@mui/icons-material"; // Icons for the menu
+import {
+  Home,
+  Settings,
+  DarkMode,
+  LightMode,
+  BrightnessAuto,
+  Games,
+  Gamepad,
+} from "@mui/icons-material"; // Icons for the menu
 import { Link } from "react-router-dom";
+import { useSettings } from "../context/SettingsContext";
 
 interface MenuProps {
   themeMode: "light" | "dark" | "system";
@@ -9,7 +18,7 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ themeMode, onThemeToggle }) => {
-  console.log("Current themeMode:", themeMode); // Debugging
+  const { settings } = useSettings();
 
   return (
     <Box sx={{ width: "fit-content", padding: "10px" }}>
@@ -20,6 +29,25 @@ const Menu: React.FC<MenuProps> = ({ themeMode, onThemeToggle }) => {
           </ListItemIcon>
         </ListItemButton>
 
+        {!settings.firstLaunch && (
+          <>
+            <ListItemButton component={Link} to="/scan-games">
+              <ListItemIcon sx={{ minWidth: "20px" }}>
+                <Games />
+              </ListItemIcon>
+            </ListItemButton>
+            <ListItemButton component={Link} to="/selected-games">
+              <ListItemIcon sx={{ minWidth: "20px" }}>
+                <Games />
+              </ListItemIcon>
+            </ListItemButton>
+            <ListItemButton component={Link} to="/exported-games">
+              <ListItemIcon sx={{ minWidth: "20px" }}>
+                <Gamepad />
+              </ListItemIcon>
+            </ListItemButton>
+          </>
+        )}
         <ListItemButton component={Link} to="/settings">
           <ListItemIcon sx={{ minWidth: "20px" }}>
             <Settings />

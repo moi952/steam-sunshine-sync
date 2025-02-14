@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import { Card, CardContent, CardMedia, Grid2, Typography } from "@mui/material";
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { SteamGame } from "steam-library-scanner";
@@ -6,41 +6,13 @@ import { SteamGame } from "steam-library-scanner";
 interface GameCardProps {
   game: SteamGame;
 }
-interface SunshineApp {
-  name: string;
-  cmd: string;
-  detached?: boolean;
-  output?: string;
-  "prep-cmd"?: string[];
-  "working-dir"?: string;
-}
-
-function formatSteamGameForSunshine(game: SteamGame): SunshineApp {
-  // return {
-  //   name: game.Name,
-  //   cmd: game.Cmd,
-  //   detached: true
-  // };
-  return {
-    name: game.name,
-    cmd: `steam://rungameid/99999`,
-    // cmd: `steam://rungameid/${game.AppID}`,
-    detached: true,
-    // "working-dir": path.dirname(game.path)
-  };
-}
 
 const GameCard: React.FC<GameCardProps> = ({ game }) => {
   const theme = useTheme();
   const imageURL = `local://${game.imagePath.replace(/\\/g, "/")}`;
 
-  const handleAddToSunshine = async () => {
-    const sunshineApp = formatSteamGameForSunshine(game);
-    await window.electron.addToSunshine(sunshineApp);
-  };
-
   return (
-    <Grid item xs={12} sm={6} md={4} key={game.name}>
+    <Grid2 key={game.name}>
       <Card
         sx={{
           minWidth: 160,
@@ -70,10 +42,9 @@ const GameCard: React.FC<GameCardProps> = ({ game }) => {
           <Typography variant="body2" component="div" noWrap>
             <b>{game.name}</b>
           </Typography>
-          <Button onClick={handleAddToSunshine}>Add to Sunshine</Button>
         </CardContent>
       </Card>
-    </Grid>
+    </Grid2>
   );
 };
 

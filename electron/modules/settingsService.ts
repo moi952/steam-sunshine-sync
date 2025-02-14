@@ -6,6 +6,7 @@ interface Settings {
   steamId: string;
   language: string;
   sunshinePath: string;
+  firstLaunch: boolean;
 }
 
 class SettingsService {
@@ -19,6 +20,7 @@ class SettingsService {
         steamId: "",
         language: "en",
         sunshinePath: "",
+        firstLaunch: true,
       },
     });
   }
@@ -33,6 +35,7 @@ class SettingsService {
       steamId: settings.steamId || "",
       language: settings.language || "en",
       sunshinePath: settings.sunshinePath || "",
+      firstLaunch: settings.firstLaunch,
     };
   }
 

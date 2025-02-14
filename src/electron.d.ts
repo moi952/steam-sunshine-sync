@@ -1,5 +1,4 @@
-import { SteamGame } from "steam-library-scanner";
-import { Game } from "./types";
+import { GameCollections } from "./types";
 
 declare global {
   interface Window {
@@ -16,37 +15,17 @@ declare global {
       getSteamGames: (_steamPath: string) => Promise<any>;
       getSteamUsers: (_steamPath: string) => Promise<{ id: string; name: string }[]>;
     };
-    electronGameStorageApi: {
-      // Retrieve Steam games
-      getSteamGames: () => Promise<any>;
-
-      // Retrieve Non-Steam games
-      getNonSteamGames: () => Promise<any>;
-
-      // Retrieve all games (Steam + Non-Steam)
-      getAllGames: () => Promise<any>;
-
-      // Add a Steam game
-      addSteamGame: (_game: SteamGame) => Promise<void>;
-
-      // Add a Non-Steam game
-      addNonSteamGame: (_game: SteamGame) => Promise<void>;
-
-      // Update a Steam game
-      updateSteamGame: (_updatedGame: SteamGame) => Promise<void>;
-
-      // Update a Non-Steam game
-      updateNonSteamGame: (_updatedGame: SteamGame) => Promise<void>;
-
-      // Delete a game
-      deleteGame: (_gameId: string) => Promise<void>;
-
-      // Retrieve a game by its ID
-      getGameById: (_gameId: string) => Promise<any>;
-    };
     electronSettingsStorageApi: {
       getSettings: () => Promise<Record<string, any>>;
       saveSettings: (_settings: Record<string, any>) => Promise<void>;
+    };
+    electronGameStorageApi: {
+      getScannedGames: () => Promise<GameCollections["scannedGames"]>;
+      setScannedGames: (_games: GameCollections["scannedGames"]) => Promise<void>;
+      getSelectedGames: () => Promise<GameCollections["selectedGames"]>;
+      setSelectedGames: (_games: GameCollections["selectedGames"]) => Promise<void>;
+      getExportedGames: () => Promise<GameCollections["exportedGames"]>;
+      setExportedGames: (_games: GameCollections["exportedGames"]) => Promise<void>;
     };
   }
 }

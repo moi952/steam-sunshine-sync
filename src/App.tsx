@@ -7,6 +7,10 @@ import "./i18n"; // Initialize i18n
 import { useThemeModeContext, ThemeModeProvider } from "./context/ThemeModeContext";
 import Menu from "./layout/Menu";
 import { SettingsProvider } from "./context/SettingsContext";
+import SelectedGames from "./components/SelectedGames";
+import ExportedGames from "./components/ExportedGames";
+import GameConfigPage from "./pages/GameConfigPage";
+import ScanGamesPage from "./pages/ScanGamesPage";
 
 const AppContent: React.FC = () => {
   const { themeMode, currentMode, toggleTheme } = useThemeModeContext();
@@ -48,6 +52,10 @@ const AppContent: React.FC = () => {
           <div style={{ marginLeft: "80px", padding: "20px" }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
+              <Route path="/scan-games" element={<ScanGamesPage />} />
+              <Route path="/selected-games" element={<SelectedGames />} />
+              <Route path="/exported-games" element={<ExportedGames />} />
+              <Route path="/game-sunshine-edit/:uniqueId" element={<GameConfigPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </div>

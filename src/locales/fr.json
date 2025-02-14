@@ -22,17 +22,39 @@
     "themeSystem": "Système"
   },
   "home": {
-    "steamGamesList": "Liste des Jeux Steam",
+    "welcome": "Bienvenue sur {{appName}}",
+    "configBeforeScan": "Pour pouvoir rechercher les jeux sur votre machine, vous devez d'abord configurer l'application.",
+    "goToSettings": "Aller aux Paramètres"
+  },
+  "scannedGames": {
     "scanGames": "Scanner les jeux",
     "addAllGames": "Ajouter tous les jeux",
     "clickScanGames": "Cliquez sur \"Scanner les jeux\" pour commencer.",
-    "successAddedGames": "Successfully added",
     "gamesToSunshine": "Jeux pour Sunshine",
-    "errorAfterAdding": "Erreur après l'ajout",
     "steamGames": "Jeux Steam",
     "nonSteamGames": "Jeux non Steam",
     "noNonSteamGames": "Aucun jeu non Steam trouvé.",
-    "steamPathOrIdNotSet": "Le chemin Steam ou l'ID Steam n'est pas défini.",
-    "games": "games"
+    "steamPathOrIdNotSet": "Le chemin Steam ou l'ID Steam n'est pas défini."
+  },
+  "gameConfig": {
+    "pageTitle": "Configuration du jeu",
+    "gameName": "Nom du jeu",
+    "applicationName": "Nom de l'application",
+    "logOutputPath": "Chemin de sortie des logs",
+    "cmd": "Commande pour lancer l'application",
+    "index": "Index",
+    "excludeGlobalPrepCmd": "Exclure la commande de préparation globale",
+    "elevated": "Exécuté en mode administrateur",
+    "autoDetach": "Détachement automatique",
+    "waitAll": "Attendre tous",
+    "exitTimeout": "Temps d'attente à la fermeture",
+    "imagePath": "Chemin de l'image",
+    "prepCommands": "Commandes de préparation",
+    "doCommand": "Commande d'initialisation",
+    "undoCommand": "Commande d'annulation",
+    "detachedProcesses": "Processus détachés",
+    "addPrepCommand": "Ajouter une commande de préparation",
+    "remove": "Supprimer",
+    "save": "Enregistrer"
   }
 }

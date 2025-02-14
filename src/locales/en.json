@@ -22,17 +22,39 @@
     "themeSystem": "System"
   },
   "home": {
-    "steamGamesList": "Steam Games List",
+    "welcome": "Welcome to {{appName}}",
+    "configBeforeScan": "To scan for games on your machine, you must first configure the application.",
+    "goToSettings": "Go to Settings"
+  },
+  "scannedGames": {
     "scanGames": "Scan Games",
     "addAllGames": "Add All Games",
     "clickScanGames": "Click \"Scan Games\" to start.",
-    "successAddedGames": "Successfully added",
     "gamesToSunshine": "games to Sunshine",
-    "errorAfterAdding": "Error after adding",
     "steamGames": "Steam Games",
     "nonSteamGames": "Non-Steam Games",
     "noNonSteamGames": "No non-Steam games found.",
-    "steamPathOrIdNotSet": "Steam path or Steam ID is not set.",
-    "games": "games"
+    "steamPathOrIdNotSet": "Steam path or Steam ID is not set."
+  },
+  "gameConfig": {
+    "pageTitle": "Game Configuration",
+    "gameName": "Game Name",
+    "applicationName": "Application Name",
+    "logOutputPath": "Log Output Path",
+    "cmd": "Command to run the application",
+    "index": "Index",
+    "excludeGlobalPrepCmd": "Exclude Global Prep Cmd",
+    "elevated": "Elevated",
+    "autoDetach": "Auto Detach",
+    "waitAll": "Wait All",
+    "exitTimeout": "Exit Timeout",
+    "imagePath": "Image Path",
+    "prepCommands": "Prep Commands",
+    "doCommand": "Do Command",
+    "undoCommand": "Undo Command",
+    "detachedProcesses": "Detached Processes",
+    "addPrepCommand": "Add Prep Command",
+    "remove": "Remove",
+    "save": "Save"
   }
 }

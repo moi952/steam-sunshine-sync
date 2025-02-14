@@ -1,39 +1,8 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { SteamGame } from "steam-library-scanner";
 
 contextBridge.exposeInMainWorld("electronSettingsStorageApi", {
   getSettings: () => ipcRenderer.invoke("get-settings"),
   saveSettings: (settings: any) => ipcRenderer.invoke("save-settings", settings),
-});
-
-contextBridge.exposeInMainWorld("electronGameStorageApi", {
-  // Retrieve Steam games
-  getSteamGames: () => ipcRenderer.invoke("getSteamGames"),
-
-  // Retrieve Non-Steam games
-  getNonSteamGames: () => ipcRenderer.invoke("getNonSteamGames"),
-
-  // Retrieve all games (Steam + Non-Steam)
-  getAllGames: () => ipcRenderer.invoke("getAllGames"),
-
-  // Add a Steam game
-  addSteamGame: (game: SteamGame) => ipcRenderer.invoke("addSteamGame", game),
-
-  // Add a Non-Steam game
-  addNonSteamGame: (game: SteamGame) => ipcRenderer.invoke("addNonSteamGame", game),
-
-  // Update a Steam game
-  updateSteamGame: (updatedGame: SteamGame) => ipcRenderer.invoke("updateSteamGame", updatedGame),
-
-  // Update a Non-Steam game
-  updateNonSteamGame: (updatedGame: SteamGame) =>
-    ipcRenderer.invoke("updateNonSteamGame", updatedGame),
-
-  // Delete a game
-  deleteGame: (gameId: string) => ipcRenderer.invoke("deleteGame", gameId),
-
-  // Retrieve a game by its ID
-  getGameById: (gameId: string) => ipcRenderer.invoke("getGameById", gameId),
 });
 
 // Exposing functions to React via `window`
@@ -55,4 +24,14 @@ contextBridge.exposeInMainWorld("electronSteamLibraryScannerApi", {
 
   getSteamUsers: (steamPath: string) =>
     ipcRenderer.invoke("steam-library-scanner:getSteamUsers", steamPath),
+});
+
+//
+contextBridge.exposeInMainWorld("electronGameStorageApi", {
+  getScannedGames: () => ipcRenderer.invoke("get-scanned-games"),
+  setScannedGames: (games: any) => ipcRenderer.invoke("set-scanned-games", games),
+  getSelectedGames: () => ipcRenderer.invoke("get-selected-games"),
+  setSelectedGames: (games: any) => ipcRenderer.invoke("set-selected-games", games),
+  getExportedGames: () => ipcRenderer.invoke("get-exported-games"),
+  setExportedGames: (games: any) => ipcRenderer.invoke("set-exported-games", games),
 });

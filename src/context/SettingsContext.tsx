@@ -10,6 +10,7 @@ import React, {
 
 export type Settings = {
   themeMode: "light" | "dark" | "system";
+  firstLaunch: boolean;
   steamPath?: string;
   steamId?: string;
   language?: string;
@@ -24,9 +25,7 @@ type SettingsContextType = {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [settings, setSettings] = useState<Settings>({
-    themeMode: "system",
-  });
+  const [settings, setSettings] = useState<Settings>({ firstLaunch: true, themeMode: "system" });
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -43,7 +42,7 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const saveSettings = useCallback((newSettings: Partial<Settings>) => {
     setSettings((prev) => {
-      const updatedSettings = { ...prev, ...newSettings };
+      const updatedSettings = { ...prev, ...newSettings, ...{ firstLaunch: false } };
       console.log("SettingsContext | Saving settings:", updatedSettings);
       window.electronSettingsStorageApi.saveSettings(updatedSettings);
       return updatedSettings;

@@ -1,18 +1,17 @@
 import { app, BrowserWindow, dialog, ipcMain, protocol } from "electron";
 import path from "path";
-import SettingsService from "./modules/settingsService";
-import { PathDetector } from "./modules/pathDetector";
 import { AppManager } from "./modules/appManager";
 import {
-  getAllSteamGames,
-  getNonSteamGames,
-  getSteamInstalledGames,
-  getSteamUsers,
-} from "steam-library-scanner";
-import { registerIpcHandlers } from "./ipcHandlers";
+  registerIpcAppSettings,
+  registerIpcGameStorage,
+  registerIpcPathDectector,
+  registerIpcSteamLibraryScanner,
+} from "./ipcHandlers";
 
 let mainWindow: BrowserWindow | null = null;
-const settingsService = new SettingsService();
+
+// Register IPC path detector
+registerIpcPathDectector();
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -43,17 +42,9 @@ ipcMain.handle("open-file-dialog", async () => {
   return result.filePaths[0] || ""; // Returns the path of the selected folder
 });
 
-ipcMain.handle("path-detector:detectSunshine", async () => await PathDetector.detectSunshinePath());
-ipcMain.handle("path-detector:getSteamPath", async () => await PathDetector.detectSteamPath());
-
-ipcMain.handle(
-  "steam-library-scanner:getSteamUsers",
-  async (_event: any, steamPath: string) => await getSteamUsers(steamPath),
-);
-
-ipcMain.handle("add-to-sunshine", async (event, app) => {
+ipcMain.handle("add-to-sunshine", async (_event, appConfig) => {
   try {
-    await AppManager.addAppToSunshine(app);
+    await AppManager.addAppToSunshine(appConfig);
     return { success: true };
   } catch (error: any) {
     return {
@@ -63,38 +54,12 @@ ipcMain.handle("add-to-sunshine", async (event, app) => {
   }
 });
 
-// Handle settings with IPC: retrieve settings
-ipcMain.handle(
-  "get-settings",
-  () => settingsService.getSettings(), // Use the class method
-);
-
-// Handle settings with IPC: save settings
-ipcMain.handle(
-  "save-settings",
-  (event, settings) => settingsService.saveSettings(settings), // Use the class method
-);
-
-ipcMain.handle("steam-library-scanner:getSteamGames", async (_event: any, steamPath: string) => {
-  return getSteamInstalledGames(steamPath);
-});
-
-ipcMain.handle(
-  "steam-library-scanner:getAllSteamGames",
-  async (_event: any, steamPath: string, userId: string) => {
-    return getAllSteamGames(steamPath, userId);
-  },
-);
-
-ipcMain.handle(
-  "steam-library-scanner:getNonSteamGames",
-  async (_event: any, steamPath: string, userId: string) => {
-    return getNonSteamGames(steamPath, userId);
-  },
-);
-
-// Register IPC handlers
-registerIpcHandlers();
+// Register IPC app settings
+registerIpcAppSettings();
+// Register IPC handlers for game library scanner
+registerIpcSteamLibraryScanner();
+// Register IPC handlers for game storage
+registerIpcGameStorage();
 
 // Initialize the Electron application
 app.whenReady().then(() => {
