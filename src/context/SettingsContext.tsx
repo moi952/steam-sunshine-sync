@@ -15,6 +15,8 @@ export type Settings = {
   steamId?: string;
   language?: string;
   sunshinePath?: string;
+  sunshineLogin?: string;
+  sunshinePassword?: string;
 };
 
 type SettingsContextType = {

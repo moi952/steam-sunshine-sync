@@ -1,9 +1,9 @@
 import { SteamGame } from "steam-library-scanner";
-import { SunshineConfig } from "./SunshineConfig";
+import { SunshineAppConfig } from "./SunshineAppConfig";
 
 export interface ExportGameConfig {
   uniqueId: string;
   appId: string;
-  sunshineConfig: SunshineConfig;
+  sunshineConfig: SunshineAppConfig;
   gameInfos: SteamGame;
 }

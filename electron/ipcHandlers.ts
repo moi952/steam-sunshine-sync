@@ -9,9 +9,12 @@ import config from "./config";
 import { GameCollections } from "./types/GameCollections";
 import SettingsService from "./modules/settingsService";
 import { PathDetector } from "./modules/PathDetector";
+import { SunshineService } from "./modules/sunshineService";
+import { decrypt, encrypt } from "./modules/cryptoService";
 
 const settingsService = new SettingsService();
 const pathDetector = new PathDetector();
+const sunshineService = new SunshineService(settingsService);
 
 export function registerIpcPathDectector() {
   ipcMain.handle("path-detector:detectSunshine", async () => pathDetector.detectSunshinePath());
@@ -21,13 +24,13 @@ export function registerIpcPathDectector() {
 export function registerIpcAppSettings() {
   // Handle settings with IPC: retrieve settings
   ipcMain.handle(
-    "get-settings",
+    "settings:getSettings",
     () => settingsService.getSettings(), // Use the class method
   );
 
   // Handle settings with IPC: save settings
   ipcMain.handle(
-    "save-settings",
+    "settings:saveSettings",
     (_event, settings) => settingsService.saveSettings(settings), // Use the class method
   );
 }
@@ -70,4 +73,31 @@ export function registerIpcGameStorage() {
   ipcMain.handle("set-exported-games", (_event, games: GameCollections["exportedGames"]) => {
     config.set("exportedGames", games);
   });
+}
+
+export function registerIpcSunshineApi() {
+  ipcMain.handle("sunshine:getApps", async () => sunshineService.getApps());
+
+  ipcMain.handle("sunshine:createApp", async (_event, appData: any) =>
+    sunshineService.createApp(appData),
+  );
+
+  ipcMain.handle("sunshine:updateApp", async (_event, appId: string, appData: any) =>
+    sunshineService.updateApp(appId, appData),
+  );
+
+  ipcMain.handle("sunshine:deleteApp", async (_event, appId: string) =>
+    sunshineService.deleteApp(appId),
+  );
+
+  ipcMain.handle("sunshine:getConfig", async () => sunshineService.getConfig());
+
+  ipcMain.handle("sunshine:updateConfig", async (_event, configData: any) =>
+    sunshineService.updateConfig(configData),
+  );
+}
+
+export function registerIpcCryptoApi() {
+  ipcMain.handle("encrypt", async (_event, text: string) => encrypt(text));
+  ipcMain.handle("decrypt", async (_event, data: string) => decrypt(data));
 }

@@ -7,6 +7,9 @@ interface Settings {
   language: string;
   sunshinePath: string;
   firstLaunch: boolean;
+  sunshineLogin: string;
+  sunshinePassword: string;
+  sunshineUrl: string;
 }
 
 class SettingsService {
@@ -21,6 +24,9 @@ class SettingsService {
         language: "en",
         sunshinePath: "",
         firstLaunch: true,
+        sunshineLogin: "",
+        sunshinePassword: "",
+        sunshineUrl: "https://localhost:47990",
       },
     });
   }
@@ -36,6 +42,9 @@ class SettingsService {
       language: settings.language || "en",
       sunshinePath: settings.sunshinePath || "",
       firstLaunch: settings.firstLaunch,
+      sunshineLogin: settings.sunshineLogin || "",
+      sunshinePassword: settings.sunshinePassword || "",
+      sunshineUrl: settings.sunshineUrl || "",
     };
   }
 

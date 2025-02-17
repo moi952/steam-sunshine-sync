@@ -1,70 +1,87 @@
 import React from "react";
-import { Box, List, ListItemButton, ListItemIcon } from "@mui/material";
+import { Box, Divider, List } from "@mui/material";
 import {
   Home,
   Settings,
   DarkMode,
   LightMode,
   BrightnessAuto,
-  Games,
   Gamepad,
-} from "@mui/icons-material"; // Icons for the menu
-import { Link } from "react-router-dom";
+  Search,
+} from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { useSettings } from "../context/SettingsContext";
+import MenuItem from "../components/layout/MenuItem";
 
 interface MenuProps {
   themeMode: "light" | "dark" | "system";
   onThemeToggle: () => void;
+  isMini: boolean;
 }
 
-const Menu: React.FC<MenuProps> = ({ themeMode, onThemeToggle }) => {
+const Menu: React.FC<MenuProps> = ({ themeMode, onThemeToggle, isMini }) => {
   const { settings } = useSettings();
+  const { t } = useTranslation();
 
   return (
-    <Box sx={{ width: "fit-content", padding: "10px" }}>
+    <Box sx={{ width: "fit-content", paddingY: "10px" }}>
       <List sx={{ gap: "10px", display: "flex", flexDirection: "column" }}>
-        <ListItemButton component={Link} to="/">
-          <ListItemIcon sx={{ minWidth: "20px" }}>
-            <Home />
-          </ListItemIcon>
-        </ListItemButton>
-
+        <MenuItem isMini={!isMini} label={t("menu.home")} path="/" icon={<Home />} />
         {!settings.firstLaunch && (
           <>
-            <ListItemButton component={Link} to="/scan-games">
-              <ListItemIcon sx={{ minWidth: "20px" }}>
-                <Games />
-              </ListItemIcon>
-            </ListItemButton>
-            <ListItemButton component={Link} to="/selected-games">
-              <ListItemIcon sx={{ minWidth: "20px" }}>
-                <Games />
-              </ListItemIcon>
-            </ListItemButton>
-            <ListItemButton component={Link} to="/exported-games">
-              <ListItemIcon sx={{ minWidth: "20px" }}>
-                <Gamepad />
-              </ListItemIcon>
-            </ListItemButton>
+            <MenuItem
+              isMini={!isMini}
+              label={t("menu.scan_games")}
+              path="/scan-games"
+              icon={<Search />}
+            />
+            {/* <MenuItem
+              isMini={!isMini}
+              label={t("menu.configure_games")}
+              path="/selected-games"
+              icon={<SportsEsports />}
+            /> */}
+            <MenuItem
+              isMini={!isMini}
+              label={t("menu.export_games")}
+              path="/exported-games"
+              icon={<Gamepad />}
+            />
+            <MenuItem
+              isMini={!isMini}
+              label={t("menu.sunshine_apps")}
+              path="/sunshine-apps"
+              icon={
+                <img
+                  src={`${process.env.PUBLIC_URL}/logo-sunshine.png`}
+                  alt="Sunshine Apps"
+                  style={{ width: 24, height: 24 }}
+                />
+              }
+            />
           </>
         )}
-        <ListItemButton component={Link} to="/settings">
-          <ListItemIcon sx={{ minWidth: "20px" }}>
-            <Settings />
-          </ListItemIcon>
-        </ListItemButton>
-
-        <ListItemButton onClick={onThemeToggle}>
-          <ListItemIcon sx={{ minWidth: "20px" }}>
-            {themeMode === "light" ? (
+        <Divider />
+        <MenuItem
+          isMini={!isMini}
+          label={t("menu.settings")}
+          path="/settings"
+          icon={<Settings />}
+        />
+        <MenuItem
+          isMini={!isMini}
+          onClick={onThemeToggle}
+          label={t("menu.theme")}
+          icon={
+            themeMode === "light" ? (
               <LightMode />
             ) : themeMode === "dark" ? (
               <DarkMode />
             ) : (
               <BrightnessAuto />
-            )}
-          </ListItemIcon>
-        </ListItemButton>
+            )
+          }
+        />
       </List>
     </Box>
   );

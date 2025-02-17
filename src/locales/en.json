@@ -1,5 +1,18 @@
 {
-  "settings": {
+  "general": {
+    "gameStatusNew": "New",
+    "gameStatusUpdated": "Updated",
+    "gameStatusRemoved": "Removed"
+  },
+  "menu": {
+    "scan_games": "Scan Games",
+    "configure_games": "Configure Games",
+    "export_games": "Export Games",
+    "settings": "Settings",
+    "sunshine_apps": "Sunshine apps",
+    "theme": "Theme"
+  },
+  "settingsPage": {
     "title": "Settings",
     "language": "Language",
     "languageFr": "French",
@@ -19,14 +32,19 @@
     "themeColor": "Theme color",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "generalSectionTitle": "General",
+    "steamSectionTitle": "Steam",
+    "sunshineSectionTitle": "Sunshine / Apollo",
+    "sunshineLogin": "Login",
+    "sunshinePassword": "Password"
   },
-  "home": {
+  "homePage": {
     "welcome": "Welcome to {{appName}}",
     "configBeforeScan": "To scan for games on your machine, you must first configure the application.",
     "goToSettings": "Go to Settings"
   },
-  "scannedGames": {
+  "scannedGamesPage": {
     "scanGames": "Scan Games",
     "addAllGames": "Add All Games",
     "clickScanGames": "Click \"Scan Games\" to start.",
@@ -34,9 +52,10 @@
     "steamGames": "Steam Games",
     "nonSteamGames": "Non-Steam Games",
     "noNonSteamGames": "No non-Steam games found.",
-    "steamPathOrIdNotSet": "Steam path or Steam ID is not set."
+    "steamPathOrIdNotSet": "Steam path or Steam ID is not set.",
+    "removedGames": "Deleted games"
   },
-  "gameConfig": {
+  "sunshineGameConfig": {
     "pageTitle": "Game Configuration",
     "gameName": "Game Name",
     "applicationName": "Application Name",
@@ -56,5 +75,9 @@
     "addPrepCommand": "Add Prep Command",
     "remove": "Remove",
     "save": "Save"
+  },
+  "sunshinePage": {
+    "title": "List of sunshine applications",
+    "noApps": "No applications found on sunshine"
   }
 }

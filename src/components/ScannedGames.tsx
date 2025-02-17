@@ -5,48 +5,166 @@ import { Box, Button, CircularProgress, Grid2, Stack, Typography } from "@mui/ma
 import { useTheme } from "@mui/material/styles";
 import { useSettings } from "../context/SettingsContext";
 import { steamService } from "../services/steamService";
-import GameCard from "./GameCard";
+import { scannedGamesService } from "../services/scannedGamesService";
+import GameCard, { gameStatus } from "./GameCard";
+
+// Extend SteamGame with a syncStatus property
+interface LabeledSteamGame extends SteamGame {
+  syncStatus?: gameStatus;
+}
 
 const ScannedGames: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { settings } = useSettings();
-  const [games, setGames] = useState<SteamGame[]>([]);
-  const [steamGames, setSteamGames] = useState<SteamGame[]>([]);
-  const [nonSteamGames, setNonSteamGames] = useState<SteamGame[]>([]);
-  const [addingAll, setAddingAll] = useState<boolean>(false);
+
+  const [steamGames, setSteamGames] = useState<LabeledSteamGame[]>([]);
+  const [nonSteamGames, setNonSteamGames] = useState<LabeledSteamGame[]>([]);
+  const [removedGames, setRemovedGames] = useState<SteamGame[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
+  // Load saved games from scannedGames storage on component mount
+  const loadSavedGames = async () => {
+    try {
+      const savedGamesConfig = await scannedGamesService.getScannedGames();
+      console.log("savedGamesConfig : ", savedGamesConfig);
+      // Map saved games to LabeledSteamGame (using gameDetails)
+      const savedGames: LabeledSteamGame[] = savedGamesConfig.map((config) => ({
+        ...config.gameDetails,
+        syncStatus: undefined,
+      }));
+      // Separate Steam and non-Steam games
+      const savedSteamGames = savedGames.filter((game) => game.appId && game.appId !== "0");
+      const savedNonSteamGames = savedGames.filter((game) => !game.appId || game.appId === "0");
+      setSteamGames(savedSteamGames);
+      setNonSteamGames(savedNonSteamGames);
+      // Removed games are not stored so we leave this empty on initial load
+      setRemovedGames([]);
+    } catch (error) {
+      console.error("Error loading saved games:", error);
+    }
+  };
   useEffect(() => {
-    setLoading(steamService.isLoading);
-  }, [steamService.isLoading]);
+    loadSavedGames();
+  }, []);
 
+  // Function to scan games and synchronize with stored data
   const scanSteamGames = async () => {
     if (!settings.steamPath || !settings.steamId) {
-      alert(t("scannedGames.steamPathOrIdNotSet"));
+      alert(t("scannedGamesPage.steamPathOrIdNotSet"));
       return;
     }
     setLoading(true);
-    setAddingAll(true);
     try {
+      // Retrieve Steam and non-Steam games
       const { steamGames: loadedSteamGames, nonSteamGames: loadedNonSteamGames } =
         await steamService.scanGames(settings.steamPath, settings.steamId);
+      const allScannedGames: SteamGame[] = [...loadedSteamGames, ...loadedNonSteamGames];
 
-      setSteamGames(loadedSteamGames);
-      setNonSteamGames(loadedNonSteamGames);
-      setGames([...loadedSteamGames, ...loadedNonSteamGames]);
+      console.log("allScannedGames", allScannedGames);
+
+      // Synchronize scanned games with stored games
+      const syncResult = await scannedGamesService.syncScannedGames(allScannedGames);
+      console.log("syncResult", syncResult);
+      await scannedGamesService.applySyncResult(syncResult);
+
+      // Determine sync status for each game ("new" or "updated")
+      const getSyncStatus = (game: SteamGame): "new" | "updated" | "" => {
+        if (syncResult.toAdd.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)) {
+          return "new";
+        }
+        if (syncResult.toUpdate.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)) {
+          return "updated";
+        }
+        return "";
+      };
+
+      // Add syncStatus label to each scanned game
+      const labeledGames = allScannedGames.map((game) => ({
+        ...game,
+        syncStatus: getSyncStatus(game),
+      })) as LabeledSteamGame[];
+
+      // Separate Steam and non-Steam games
+      const labeledSteamGames = labeledGames.filter((game) => game.appId && game.appId !== "0");
+      const labeledNonSteamGames = labeledGames.filter((game) => !game.appId || game.appId === "0");
+
+      // Filter removed games (exclude those that are updated)
+      const removed = syncResult.toRemove
+        .filter(
+          (syncGame) =>
+            !syncResult.toUpdate.some(
+              (updateGame) => updateGame.gameDetails.cmd === syncGame.gameDetails.cmd,
+            ),
+        )
+        .map((syncGame) => syncGame.gameDetails);
+
+      // Update states with the new data
+      setSteamGames(labeledSteamGames);
+      setNonSteamGames(labeledNonSteamGames);
+      setRemovedGames(removed);
     } catch (error) {
       console.error("Error scanning games:", error);
-      alert(`${t("scannedGames.errorScanningGames")}: ${steamService.errorMessage}`);
+      alert(`${t("scannedGamesPage.errorScanningGames")}: ${steamService.errorMessage}`);
     } finally {
       setLoading(false);
-      setAddingAll(false);
     }
   };
 
-  const addAllGames = async () => {
-    // Logique pour ajouter tous les jeux à la liste des jeux sélectionnés
-    // Par exemple, enregistrer tous les jeux dans `selectedGames`
+  // Function to add fake data by merging with existing saved games
+  const addFakeData = async () => {
+    // Define two fake games: one Steam and one non-Steam
+    const fakeSteamGame: SteamGame = {
+      cmd: "fake-steam-game",
+      appId: "123456",
+      name: "Fake Steam Game",
+      imagePath: "",
+    };
+
+    const fakeNonSteamGame: SteamGame = {
+      cmd: "fake-nonsteam-game",
+      appId: "0",
+      name: "Fake Non Steam Game",
+      imagePath: "",
+    };
+
+    const fakeGames: SteamGame[] = [fakeSteamGame, fakeNonSteamGame];
+
+    // Stable unique ID generator (must match the one used in scannedGamesService)
+    const generateUniqueId = (game: SteamGame): string => `${game.cmd}_${game.appId}`;
+    const isSteamGame = (game: SteamGame): boolean => Boolean(game.appId && game.appId !== "0");
+
+    setLoading(true);
+    try {
+      // Retrieve current saved games
+      const savedGames = await scannedGamesService.getScannedGames();
+
+      // Convert fake games to the StoredGame format
+      const newFakeStoredGames = fakeGames.map((game) => ({
+        id: generateUniqueId(game),
+        isSteamGame: isSteamGame(game),
+        gameDetails: game,
+      }));
+
+      // Merge new fake games with the existing saved games (avoid duplicates)
+      const mergedGames = [...savedGames];
+      newFakeStoredGames.forEach((fakeGame) => {
+        if (!mergedGames.some((storedGame) => storedGame.id === fakeGame.id)) {
+          mergedGames.push(fakeGame);
+        }
+      });
+
+      // Save the merged list back to storage
+      await scannedGamesService.setScannedGames(mergedGames);
+
+      // Refresh UI by reloading saved games
+      await loadSavedGames();
+    } catch (error) {
+      console.error("Error adding fake data:", error);
+      alert("Erreur lors de l'ajout de fausses données");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,56 +176,65 @@ const ScannedGames: React.FC = () => {
         color: theme.palette.text.primary,
       }}
     >
-      {games.length > 0 && (
-        <Button variant="contained" color="secondary" onClick={addAllGames} disabled={addingAll}>
-          {addingAll ? (
-            <CircularProgress size={24} color="inherit" />
-          ) : (
-            t("scannedGames.addAllGames")
-          )}
+      {/* Action buttons at the top */}
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+        <Button variant="contained" color="primary" onClick={scanSteamGames} disabled={loading}>
+          {loading ? <CircularProgress size={24} /> : t("scannedGamesPage.scanGames")}
         </Button>
+        <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
+          {t("scannedGamesPage.addFakeData")}
+        </Button>
+      </Stack>
+
+      {/* Section for removed games */}
+      {removedGames.length > 0 && (
+        <>
+          <Typography variant="h4" gutterBottom>
+            {t("scannedGamesPage.removedGames")}
+          </Typography>
+          <Grid2 container spacing={3} sx={{ mb: 4 }}>
+            {removedGames.map((game) => (
+              <Grid2 key={game.cmd}>
+                <GameCard game={game} status="removed" />
+              </Grid2>
+            ))}
+          </Grid2>
+        </>
       )}
 
-      {/* Section Jeux Steam */}
+      {/* Section for Steam games */}
       <Typography variant="h4" gutterBottom>
-        {t("scannedGames.steamGames")}
+        {t("scannedGamesPage.steamGames")}
       </Typography>
       <Grid2 container spacing={3}>
         {steamGames.length === 0 && !loading && (
           <Typography variant="body1" sx={{ width: "100%", textAlign: "center" }}>
-            {t("scannedGames.clickScanGames")}
+            {t("scannedGamesPage.clickScanGames")}
           </Typography>
         )}
         {steamGames.map((game) => (
           <Grid2 key={game.cmd}>
-            <GameCard game={game} />
+            <GameCard game={game} status={game.syncStatus || undefined} />
           </Grid2>
         ))}
       </Grid2>
 
-      {/* Section Jeux Non-Steam */}
-      <Typography variant="h4" gutterBottom sx={{ marginTop: 4 }}>
-        {t("scannedGames.nonSteamGames")}
+      {/* Section for Non-Steam games */}
+      <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
+        {t("scannedGamesPage.nonSteamGames")}
       </Typography>
       <Grid2 container spacing={3}>
         {nonSteamGames.length === 0 && !loading && (
           <Typography variant="body1" sx={{ width: "100%", textAlign: "center" }}>
-            {t("scannedGames.noNonSteamGames")}
+            {t("scannedGamesPage.noNonSteamGames")}
           </Typography>
         )}
         {nonSteamGames.map((game) => (
           <Grid2 key={game.cmd}>
-            <GameCard game={game} />
+            <GameCard game={game} status={game.syncStatus || undefined} />
           </Grid2>
         ))}
       </Grid2>
-
-      {/* Bouton Scanner les jeux */}
-      <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-        <Button variant="contained" color="primary" onClick={scanSteamGames} disabled={loading}>
-          {loading ? <CircularProgress size={24} /> : t("scannedGames.scanGames")}
-        </Button>
-      </Stack>
     </Box>
   );
 };

@@ -3,3 +3,7 @@ export type { SteamManifest } from "./SteamManifest";
 export type { ThemeMode } from "./ThemeMode";
 export type { GameCollections } from "./GameCollections";
 export type { ExportGameConfig } from "./ExportGameConfig";
+export type { ScannedGamesConfig } from "./ScannedGamesConfig";
+export type { ResponseSunshine } from "./SunshineApi";
+export type { SunshineAppConfig } from "./SunshineAppConfig";
+export type { SunshineConfig } from "./SunshineConfig";

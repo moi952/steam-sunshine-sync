@@ -24,6 +24,8 @@
     "@types/node": "^22.13.1",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/parser": "^8.24.0",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "drivelist": "^12.0.2",
     "electron": "^34.1.1",
     "electron-conf": "^1.2.1",

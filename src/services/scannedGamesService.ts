@@ -1,73 +1,71 @@
 import { SteamGame } from "steam-library-scanner";
 
-interface ScannedGamesService {
-  isLoading: boolean;
-  isError: boolean;
-  errorMessage: string;
-
-  getScannedGames: () => Promise<SteamGame[]>;
-  setScannedGames: (_games: SteamGame[]) => Promise<void>;
-  addScannedGame: (_game: SteamGame) => Promise<void>;
-  removeScannedGame: (_gameId: string) => Promise<void>;
-  resetState: () => void;
+// Define interfaces
+interface StoredGame {
+  id: string;
+  isSteamGame: boolean;
+  gameDetails: SteamGame;
 }
 
-export const scannedGamesService: ScannedGamesService = {
-  isLoading: false,
-  isError: false,
-  errorMessage: "",
+interface SyncResult {
+  toAdd: StoredGame[];
+  toUpdate: StoredGame[];
+  toRemove: StoredGame[];
+}
 
-  getScannedGames: async () => {
-    scannedGamesService.isLoading = true;
-    scannedGamesService.isError = false;
-    scannedGamesService.errorMessage = "";
-    try {
-      const games = await window.electronGameStorageApi.getScannedGames();
-      scannedGamesService.isLoading = false;
-      return games;
-    } catch (error: any) {
-      scannedGamesService.isLoading = false;
-      scannedGamesService.isError = true;
-      scannedGamesService.errorMessage = error.message;
-      throw error;
-    }
+// Generate a stable unique ID based on unique game properties (e.g., cmd and appId)
+const generateUniqueId = (game: SteamGame): string => `${game.cmd}_${game.appId}`;
+
+const isSteamGame = (game: SteamGame): boolean => Boolean(game.appId && game.appId !== "0");
+
+export const scannedGamesService = {
+  async getScannedGames(): Promise<StoredGame[]> {
+    return window.electronGameStorageApi.getScannedGames();
   },
 
-  setScannedGames: async (games: SteamGame[]) => {
-    try {
-      await window.electronGameStorageApi.setScannedGames(games);
-    } catch (error: any) {
-      scannedGamesService.isError = true;
-      scannedGamesService.errorMessage = error.message;
-      throw error;
-    }
+  async setScannedGames(games: StoredGame[]): Promise<void> {
+    await window.electronGameStorageApi.setScannedGames(games);
   },
 
-  addScannedGame: async (game: SteamGame) => {
-    try {
-      const games = await scannedGamesService.getScannedGames();
-      const updatedGames = [...games, game];
-      await scannedGamesService.setScannedGames(updatedGames);
-    } catch (error) {
-      console.error("Error adding scanned game:", error);
-      throw new Error("Failed to add scanned game.");
-    }
+  async syncScannedGames(newGames: SteamGame[]): Promise<SyncResult> {
+    const storedGames = await this.getScannedGames();
+
+    const newGamesWithId: StoredGame[] = newGames.map((game) => ({
+      id: generateUniqueId(game),
+      isSteamGame: isSteamGame(game),
+      gameDetails: game,
+    }));
+
+    const storedGamesMap = new Map(storedGames.map((game) => [game.id, game]));
+    const newGamesMap = new Map(newGamesWithId.map((game) => [game.id, game]));
+
+    const toAdd = newGamesWithId.filter((game) => !storedGamesMap.has(game.id));
+    const toUpdate = newGamesWithId.filter(
+      (game) =>
+        storedGamesMap.has(game.id) &&
+        JSON.stringify(storedGamesMap.get(game.id)) !== JSON.stringify(game),
+    );
+    const toRemove = storedGames.filter((game) => !newGamesMap.has(game.id));
+
+    return { toAdd, toUpdate, toRemove };
   },
 
-  removeScannedGame: async (gameId: string) => {
-    try {
-      const games = await scannedGamesService.getScannedGames();
-      const updatedGames = games.filter((game) => game.appId !== gameId);
-      await scannedGamesService.setScannedGames(updatedGames);
-    } catch (error) {
-      console.error("Error removing scanned game:", error);
-      throw new Error("Failed to remove scanned game.");
-    }
+  async applySyncResult(syncResult: SyncResult): Promise<void> {
+    const storedGames = await this.getScannedGames();
+    const updatedGames = [
+      ...storedGames.filter((game) => !syncResult.toRemove.some((g) => g.id === game.id)),
+      ...syncResult.toUpdate,
+      ...syncResult.toAdd,
+    ];
+    await this.setScannedGames(updatedGames);
   },
 
-  resetState: () => {
-    scannedGamesService.isLoading = false;
-    scannedGamesService.isError = false;
-    scannedGamesService.errorMessage = "";
+  async removeGames(ids: string[]): Promise<void> {
+    // Retrieve stored games
+    const storedGames = await this.getScannedGames();
+    // Filter out the games whose id is included in the ids array
+    const updatedGames = storedGames.filter((game) => !ids.includes(game.id));
+    // Save the updated list back to storage
+    await this.setScannedGames(updatedGames);
   },
 };

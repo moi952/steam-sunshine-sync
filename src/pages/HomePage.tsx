@@ -13,19 +13,19 @@ const HomePage: React.FC = () => {
   }, [settings]);
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
+    <Container maxWidth="md" sx={{ mt: 8 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
-          {t("home.welcome")}
+          {t("homePage.welcome", { appName: "Steam sunshine sync" })}
         </Typography>
         {settings.firstLaunch && (
           <>
             <Typography variant="body1" align="center" gutterBottom>
-              {t("home.configBeforeScan")}
+              {t("homePage.configBeforeScan")}
             </Typography>
             <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
               <Button variant="contained" color="primary" component={Link} to="/settings">
-                {t("home.goToSettings")}
+                {t("homePage.goToSettings")}
               </Button>
             </Box>
           </>

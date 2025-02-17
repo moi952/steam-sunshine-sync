@@ -11,7 +11,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { ExportGameConfig } from "../types";
 import { exportedGamesService } from "../services/exportedGamesService";
-import { SunshineConfig } from "../types/SunshineConfig";
+import { SunshineAppConfig } from "../types/SunshineAppConfig";
 
 const GameConfigPage: React.FC = () => {
   const { t } = useTranslation();
@@ -31,8 +31,11 @@ const GameConfigPage: React.FC = () => {
     fetchGameDetails();
   }, [uniqueId]);
 
-  // Mise à jour d'un champ de sunshineConfig avec typage via SunshineConfig
-  const handleChange = <K extends keyof SunshineConfig>(field: K, value: SunshineConfig[K]) => {
+  // Mise à jour d'un champ de sunshineConfig avec typage via SunshineAppConfig
+  const handleChange = <K extends keyof SunshineAppConfig>(
+    field: K,
+    value: SunshineAppConfig[K],
+  ) => {
     if (gameDetails) {
       setGameDetails({
         ...gameDetails,
@@ -45,7 +48,7 @@ const GameConfigPage: React.FC = () => {
   };
 
   // Pour les cases à cocher (booléens)
-  const handleCheckboxChange = (field: keyof SunshineConfig) => {
+  const handleCheckboxChange = (field: keyof SunshineAppConfig) => {
     if (gameDetails) {
       setGameDetails({
         ...gameDetails,
@@ -60,7 +63,7 @@ const GameConfigPage: React.FC = () => {
   // Pour la modification d'une commande de préparation
   const handlePrepCmdChange = (
     index: number,
-    field: keyof SunshineConfig["prepCmd"][number],
+    field: keyof SunshineAppConfig["prepCmd"][number],
     value: any,
   ) => {
     if (gameDetails) {
@@ -119,7 +122,7 @@ const GameConfigPage: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        {t("gameConfig.pageTitle")}
+        {t("sunshineGameConfig.pageTitle")}
       </Typography>
       <Typography variant="h6" gutterBottom>
         {gameDetails.gameInfos.name}
@@ -127,7 +130,7 @@ const GameConfigPage: React.FC = () => {
 
       {/* Champs de la configuration Sunshine */}
       <TextField
-        label={t("gameConfig.applicationName")}
+        label={t("sunshineGameConfig.applicationName")}
         value={gameDetails.sunshineConfig.name}
         onChange={(e) => handleChange("name", e.target.value)}
         fullWidth
@@ -135,7 +138,7 @@ const GameConfigPage: React.FC = () => {
       />
 
       <TextField
-        label={t("gameConfig.logOutputPath")}
+        label={t("sunshineGameConfig.logOutputPath")}
         value={gameDetails.sunshineConfig.output}
         onChange={(e) => handleChange("output", e.target.value)}
         fullWidth
@@ -143,7 +146,7 @@ const GameConfigPage: React.FC = () => {
       />
 
       <TextField
-        label={t("gameConfig.cmd")}
+        label={t("sunshineGameConfig.cmd")}
         value={gameDetails.sunshineConfig.cmd}
         onChange={(e) => handleChange("cmd", e.target.value)}
         fullWidth
@@ -151,7 +154,7 @@ const GameConfigPage: React.FC = () => {
       />
 
       <TextField
-        label={t("gameConfig.index")}
+        label={t("sunshineGameConfig.index")}
         type="number"
         value={gameDetails.sunshineConfig.index}
         onChange={(e) => handleChange("index", Number(e.target.value))}
@@ -166,7 +169,7 @@ const GameConfigPage: React.FC = () => {
             onChange={() => handleCheckboxChange("excludeGlobalPrepCmd")}
           />
         }
-        label={t("gameConfig.excludeGlobalPrepCmd")}
+        label={t("sunshineGameConfig.excludeGlobalPrepCmd")}
       />
 
       <FormControlLabel
@@ -176,7 +179,7 @@ const GameConfigPage: React.FC = () => {
             onChange={() => handleCheckboxChange("elevated")}
           />
         }
-        label={t("gameConfig.elevated")}
+        label={t("sunshineGameConfig.elevated")}
       />
 
       <FormControlLabel
@@ -186,7 +189,7 @@ const GameConfigPage: React.FC = () => {
             onChange={() => handleCheckboxChange("autoDetach")}
           />
         }
-        label={t("gameConfig.autoDetach")}
+        label={t("sunshineGameConfig.autoDetach")}
       />
 
       <FormControlLabel
@@ -196,11 +199,11 @@ const GameConfigPage: React.FC = () => {
             onChange={() => handleCheckboxChange("waitAll")}
           />
         }
-        label={t("gameConfig.waitAll")}
+        label={t("sunshineGameConfig.waitAll")}
       />
 
       <TextField
-        label={t("gameConfig.exitTimeout")}
+        label={t("sunshineGameConfig.exitTimeout")}
         type="number"
         value={gameDetails.sunshineConfig.exitTimeout}
         onChange={(e) => handleChange("exitTimeout", Number(e.target.value))}
@@ -209,7 +212,7 @@ const GameConfigPage: React.FC = () => {
       />
 
       <TextField
-        label={t("gameConfig.imagePath")}
+        label={t("sunshineGameConfig.imagePath")}
         value={gameDetails.sunshineConfig.imagePath}
         onChange={(e) => handleChange("imagePath", e.target.value)}
         fullWidth
@@ -217,19 +220,19 @@ const GameConfigPage: React.FC = () => {
       />
 
       <Typography variant="h6" gutterBottom>
-        {t("gameConfig.prepCommands")}
+        {t("sunshineGameConfig.prepCommands")}
       </Typography>
-      {gameDetails.sunshineConfig.prepCmd.map((cmd, index) => (
+      {gameDetails.sunshineConfig.prepCmd.map((cmd: any, index: any) => (
         <div key={index} style={{ marginBottom: "1rem" }}>
           <TextField
-            label={t("gameConfig.doCommand")}
+            label={t("sunshineGameConfig.doCommand")}
             value={cmd.do}
             onChange={(e) => handlePrepCmdChange(index, "do", e.target.value)}
             fullWidth
             margin="normal"
           />
           <TextField
-            label={t("gameConfig.undoCommand")}
+            label={t("sunshineGameConfig.undoCommand")}
             value={cmd.undo}
             onChange={(e) => handlePrepCmdChange(index, "undo", e.target.value)}
             fullWidth
@@ -242,10 +245,10 @@ const GameConfigPage: React.FC = () => {
                 onChange={() => handlePrepCmdChange(index, "elevated", !cmd.elevated)}
               />
             }
-            label={t("gameConfig.elevated")}
+            label={t("sunshineGameConfig.elevated")}
           />
           <Button variant="contained" color="secondary" onClick={() => removePrepCmd(index)}>
-            {t("gameConfig.remove")}
+            {t("sunshineGameConfig.remove")}
           </Button>
         </div>
       ))}
@@ -255,14 +258,14 @@ const GameConfigPage: React.FC = () => {
         onClick={addPrepCmd}
         style={{ marginBottom: "1rem" }}
       >
-        {t("gameConfig.addPrepCommand")}
+        {t("sunshineGameConfig.addPrepCommand")}
       </Button>
 
       <Typography variant="h6" gutterBottom>
-        {t("gameConfig.detachedProcesses")}
+        {t("sunshineGameConfig.detachedProcesses")}
       </Typography>
       <TextField
-        label={t("gameConfig.detachedProcesses")}
+        label={t("sunshineGameConfig.detachedProcesses")}
         value={gameDetails.sunshineConfig.detached.join(", ")}
         onChange={(e) =>
           handleChange(
@@ -280,7 +283,7 @@ const GameConfigPage: React.FC = () => {
         onClick={saveGameDetails}
         style={{ marginTop: "1rem" }}
       >
-        {t("gameConfig.save")}
+        {t("sunshineGameConfig.save")}
       </Button>
     </Container>
   );

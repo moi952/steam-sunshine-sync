@@ -1,5 +1,18 @@
 {
-  "settings": {
+  "general": {
+    "gameStatusNew": "Nouveau",
+    "gameStatusUpdated": "Mis à jour",
+    "gameStatusRemoved": "Supprimé"
+  },
+  "menu": {
+    "scan_games": "Analyser les jeux",
+    "configure_games": "Configurer les jeux",
+    "export_games": "Exporter les jeux",
+    "settings": "Paramètres",
+    "sunshine_apps": "Apps sunshine",
+    "theme": "Thème"
+  },
+  "settingsPage": {
     "title": "Paramètres",
     "language": "Langue",
     "languageFr": "Français",
@@ -19,14 +32,19 @@
     "themeColor": "Couleur du theme",
     "themeLight": "Lumineux",
     "themeDark": "Sombre",
-    "themeSystem": "Système"
+    "themeSystem": "Système",
+    "generalSectionTitle": "Général",
+    "steamSectionTitle": "Steam",
+    "sunshineSectionTitle": "Sunshine / Apollo",
+    "sunshineLogin": "Identifiant",
+    "sunshinePassword": "Mot de passe"
   },
-  "home": {
+  "homePage": {
     "welcome": "Bienvenue sur {{appName}}",
     "configBeforeScan": "Pour pouvoir rechercher les jeux sur votre machine, vous devez d'abord configurer l'application.",
     "goToSettings": "Aller aux Paramètres"
   },
-  "scannedGames": {
+  "scannedGamesPage": {
     "scanGames": "Scanner les jeux",
     "addAllGames": "Ajouter tous les jeux",
     "clickScanGames": "Cliquez sur \"Scanner les jeux\" pour commencer.",
@@ -34,9 +52,10 @@
     "steamGames": "Jeux Steam",
     "nonSteamGames": "Jeux non Steam",
     "noNonSteamGames": "Aucun jeu non Steam trouvé.",
-    "steamPathOrIdNotSet": "Le chemin Steam ou l'ID Steam n'est pas défini."
+    "steamPathOrIdNotSet": "Le chemin Steam ou l'ID Steam n'est pas défini.",
+    "removedGames": "Jeux supprimés de l'application"
   },
-  "gameConfig": {
+  "sunshineGameConfig": {
     "pageTitle": "Configuration du jeu",
     "gameName": "Nom du jeu",
     "applicationName": "Nom de l'application",
@@ -56,5 +75,9 @@
     "addPrepCommand": "Ajouter une commande de préparation",
     "remove": "Supprimer",
     "save": "Enregistrer"
+  },
+  "sunshinePage": {
+    "title": "Liste des application sunshine",
+    "noApps": "Aucune application trouvé sur sunshine"
   }
 }

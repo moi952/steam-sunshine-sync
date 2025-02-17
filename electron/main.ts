@@ -1,22 +1,28 @@
 import { app, BrowserWindow, dialog, ipcMain, protocol } from "electron";
 import path from "path";
-import { AppManager } from "./modules/appManager";
+import dotenv from "dotenv";
 import {
   registerIpcAppSettings,
+  registerIpcCryptoApi,
   registerIpcGameStorage,
   registerIpcPathDectector,
   registerIpcSteamLibraryScanner,
+  registerIpcSunshineApi,
 } from "./ipcHandlers";
+
+dotenv.config();
 
 let mainWindow: BrowserWindow | null = null;
 
 // Register IPC path detector
 registerIpcPathDectector();
 
+registerIpcSunshineApi();
+
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 720,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -42,18 +48,7 @@ ipcMain.handle("open-file-dialog", async () => {
   return result.filePaths[0] || ""; // Returns the path of the selected folder
 });
 
-ipcMain.handle("add-to-sunshine", async (_event, appConfig) => {
-  try {
-    await AppManager.addAppToSunshine(appConfig);
-    return { success: true };
-  } catch (error: any) {
-    return {
-      success: false,
-      error: error.message || "Failed to add application",
-    };
-  }
-});
-
+registerIpcCryptoApi();
 // Register IPC app settings
 registerIpcAppSettings();
 // Register IPC handlers for game library scanner
