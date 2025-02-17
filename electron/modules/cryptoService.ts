@@ -2,7 +2,7 @@ import * as crypto from "crypto";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log(" process.env.ENCRYPTION_KEY", process.env.ENCRYPTION_KEY);
+
 const algorithm = "aes-256-cbc";
 const secret = process.env.ENCRYPTION_KEY;
 const key = crypto.scryptSync(secret!, "salt", 32);

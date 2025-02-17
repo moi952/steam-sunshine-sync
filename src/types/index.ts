@@ -7,3 +7,4 @@ export type { ScannedGamesConfig } from "./ScannedGamesConfig";
 export type { ResponseSunshine } from "./SunshineApi";
 export type { SunshineAppConfig } from "./SunshineAppConfig";
 export type { SunshineConfig } from "./SunshineConfig";
+export type { SteamUserType } from "./SteamUserType";

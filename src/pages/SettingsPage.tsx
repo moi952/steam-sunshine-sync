@@ -1,35 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Typography,
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Alert,
-  IconButton,
-  CircularProgress,
-  Box,
-  Grid2,
-  InputAdornment,
-} from "@mui/material";
-import {
-  FolderOpen as FolderOpenIcon,
-  Search as SearchIcon,
-  Visibility,
-  VisibilityOff,
-} from "@mui/icons-material";
+import { Box, Button, Grid2, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ThemeMode } from "../types";
 import { useThemeModeContext } from "../context/ThemeModeContext";
 import { useSettings } from "../context/SettingsContext";
-import SettingsSection from "../components/SettingsSection";
-
-type SteamUserType = {
-  id: string;
-  name: string;
-};
+import { ThemeMode, SteamUserType } from "../types";
+import GeneralSettings from "../components/GeneralSettings";
+import SunshineSettings from "../components/SunshineSettings";
+import SteamSettings from "../components/SteamSettings";
 
 const SettingsPage: React.FC = () => {
   const { setTheme } = useThemeModeContext();
@@ -57,7 +34,6 @@ const SettingsPage: React.FC = () => {
 
   const loadSettings = async () => {
     if (settings) {
-      console.log("Settings loaded:", settings);
       setSteamPath(settings.steamPath || "");
       setSteamId(settings.steamId || "");
       setLanguage(settings.language || "fr");
@@ -67,7 +43,6 @@ const SettingsPage: React.FC = () => {
       setThemeMode(settings.themeMode || "system");
       setSettingsLoaded(true);
     }
-
     i18n.changeLanguage(settings.language || "fr");
   };
 
@@ -124,7 +99,7 @@ const SettingsPage: React.FC = () => {
       if (type === "steamUsers" && detectedUsers.length > 0) {
         setSteamUsers(detectedUsers);
         if (!steamUsers.some((user) => user.id === steamId)) {
-          setSteamId(detectedUsers[0].id); // Set the first detected user as default if current ID is not in the list
+          setSteamId(detectedUsers[0].id);
         }
         const formattedUsers = detectedUsers.map((user) => `${user.name} (${user.id})`);
         setSteamUsersAlert(
@@ -140,9 +115,10 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const handleThemeChange = (value: string) => {
-    setThemeMode(value as ThemeMode);
+  const handleThemeChange = (value: ThemeMode) => {
+    setThemeMode(value);
   };
+
   const encryptAndStorePassword = async (plain: string) => {
     try {
       const encrypted = await window.cryptoAPI.encrypt(plain);
@@ -207,176 +183,44 @@ const SettingsPage: React.FC = () => {
       </Typography>
 
       <Grid2 container spacing={3}>
-        {/* General Settings Section */}
+        <GeneralSettings
+          language={language}
+          themeMode={themeMode}
+          onLanguageChange={setLanguage}
+          onThemeChange={handleThemeChange}
+        />
 
-        <SettingsSection sectionTitle={t("settingsPage.generalSectionTitle")}>
-          <FormControl fullWidth size="small">
-            <InputLabel>{t("settingsPage.language")}</InputLabel>
-            <Select
-              size="small"
-              value={language}
-              onChange={(e: any) => setLanguage(e.target.value)}
-              label={t("settingsPage.language")}
-              variant="outlined"
-            >
-              <MenuItem value="fr">{t("settingsPage.languageFr")}</MenuItem>
-              <MenuItem value="en">{t("settingsPage.languageEn")}</MenuItem>
-            </Select>
-          </FormControl>
+        <SunshineSettings
+          sunshinePath={sunshinePath}
+          sunshineLogin={sunshineLogin}
+          sunshinePassword={sunshinePlainPassword}
+          showPassword={showPassword}
+          sunshineAlert={sunshineAlert}
+          loading={loading.sunshine}
+          onSunshinePathChange={setSunshinePath}
+          onSunshineLoginChange={setSunshineLogin}
+          onSunshinePasswordChange={setSunshinePlainPassword}
+          onShowPasswordChange={setShowPassword}
+          onScan={() => handleScan("sunshine")}
+          onBrowse={() => handleBrowse(setSunshinePath, setSunshineAlert)}
+          onPasswordBlur={handlePasswordBlur}
+        />
 
-          <FormControl fullWidth size="small">
-            <InputLabel>{t("settingsPage.themeColor")}</InputLabel>
-            <Select
-              value={themeMode}
-              onChange={(e) => handleThemeChange(e.target.value)}
-              label={t("settingsPage.themeColor")}
-              fullWidth
-            >
-              <MenuItem value="light">{t("settingsPage.themeLight")}</MenuItem>
-              <MenuItem value="dark">{t("settingsPage.themeDark")}</MenuItem>
-              <MenuItem value="system">{t("settingsPage.themeSystem")}</MenuItem>
-            </Select>
-          </FormControl>
-        </SettingsSection>
-
-        {/* Sunshine Settings Section */}
-
-        <SettingsSection sectionTitle={t("settingsPage.sunshineSectionTitle")}>
-          <Box display="flex" alignItems="center">
-            <TextField
-              size="small"
-              label={t("settingsPage.sunshinePath")}
-              variant="outlined"
-              fullWidth
-              value={sunshinePath}
-              onChange={(e: any) => setSunshinePath(e.target.value)}
-              sx={{ flex: 1, marginRight: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleBrowse(setSunshinePath, setSunshineAlert)}
-                  >
-                    <FolderOpenIcon />
-                  </IconButton>
-                ),
-              }}
-            />
-            <IconButton
-              color="primary"
-              onClick={() => handleScan("sunshine")}
-              disabled={loading.sunshine}
-            >
-              {loading.sunshine ? <CircularProgress size={24} /> : <SearchIcon />}
-            </IconButton>
-          </Box>
-          {sunshineAlert && <Alert severity="info">{sunshineAlert}</Alert>}
-
-          {/* Sunshine Login and Password Fields */}
-          <Box display="flex" sx={{ gap: 2 }}>
-            <Box>
-              <TextField
-                size="small"
-                label={t("settingsPage.sunshineLogin")}
-                variant="outlined"
-                fullWidth
-                value={sunshineLogin}
-                onChange={(e: any) => setSunshineLogin(e.target.value)}
-                sx={{ flex: 1 }}
-              />
-            </Box>
-            <Box>
-              <TextField
-                size="small"
-                label={t("settingsPage.sunshinePassword")}
-                variant="outlined"
-                type={showPassword ? "text" : "password"}
-                fullWidth
-                value={sunshinePlainPassword}
-                onChange={(e) => setSunshinePlainPassword(e.target.value)}
-                onBlur={handlePasswordBlur}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-          </Box>
-        </SettingsSection>
-
-        {/* Steam Settings Section */}
-
-        <SettingsSection sectionTitle={t("settingsPage.steamSectionTitle")}>
-          <Box display="flex" alignItems="center">
-            <TextField
-              size="small"
-              label={t("settingsPage.steamPath")}
-              variant="outlined"
-              fullWidth
-              value={steamPath}
-              onChange={(e: any) => setSteamPath(e.target.value)}
-              sx={{ flex: 1, marginRight: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleBrowse(setSteamPath, setSteamAlert)}
-                  >
-                    <FolderOpenIcon />
-                  </IconButton>
-                ),
-              }}
-            />
-            <IconButton
-              color="primary"
-              onClick={() => handleScan("steam")}
-              disabled={loading.steam}
-            >
-              {loading.steam ? <CircularProgress size={24} /> : <SearchIcon />}
-            </IconButton>
-          </Box>
-          {steamAlert && <Alert severity="info">{steamAlert}</Alert>}
-
-          {/* Steam Users */}
-          <Box display="flex" alignItems="center">
-            <FormControl fullWidth sx={{ flex: 1, marginRight: 2 }}>
-              <InputLabel>{t("settingsPage.steamId")}</InputLabel>
-              <Select
-                size="small"
-                value={steamId}
-                onChange={(e: any) => setSteamId(e.target.value)}
-                label={t("settingsPage.steamId")}
-                displayEmpty
-                variant="outlined"
-              >
-                {steamUsers.length > 0 ? (
-                  steamUsers.map((user, index) => (
-                    <MenuItem key={index} value={user.id}>
-                      {user.name} ({user.id})
-                    </MenuItem>
-                  ))
-                ) : (
-                  <MenuItem value={steamId}>{steamId}</MenuItem>
-                )}
-              </Select>
-            </FormControl>
-            <IconButton
-              color="primary"
-              onClick={() => handleScan("steamUsers")}
-              disabled={loading.steamUsers}
-            >
-              {loading.steamUsers ? <CircularProgress size={24} /> : <SearchIcon />}
-            </IconButton>
-          </Box>
-          {steamUsersAlert && <Alert severity="info">{steamUsersAlert}</Alert>}
-        </SettingsSection>
+        <SteamSettings
+          steamPath={steamPath}
+          steamId={steamId}
+          steamUsers={steamUsers}
+          steamAlert={steamAlert}
+          steamUsersAlert={steamUsersAlert}
+          loading={{ steam: loading.steam, steamUsers: loading.steamUsers }}
+          onSteamPathChange={setSteamPath}
+          onSteamIdChange={setSteamId}
+          onScan={handleScan}
+          onBrowse={handleBrowse}
+          setSteamAlert={setSteamAlert}
+        />
       </Grid2>
-      {/* Save Button */}
+
       <Button
         variant="contained"
         color="primary"
