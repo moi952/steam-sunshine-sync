@@ -64,8 +64,8 @@
     "index": "Index",
     "excludeGlobalPrepCmd": "Exclure la commande de préparation globale",
     "elevated": "Exécuté en mode administrateur",
-    "autoDetach": "Détachement automatique",
-    "waitAll": "Attendre tous",
+    "autoDetach": "Continuer le streaming si l'application quitte rapidement",
+    "waitAll": "Continuer le streaming jusqu'à ce que tous les processus de l'application quittent",
     "exitTimeout": "Temps d'attente à la fermeture",
     "imagePath": "Chemin de l'image",
     "prepCommands": "Commandes de préparation",
@@ -73,11 +73,14 @@
     "undoCommand": "Commande d'annulation",
     "detachedProcesses": "Processus détachés",
     "addPrepCommand": "Ajouter une commande de préparation",
+    "workingDir": "Démarrer dans",
     "remove": "Supprimer",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "cancel": "Annuler"
   },
   "sunshinePage": {
     "title": "Liste des application sunshine",
-    "noApps": "Aucune application trouvé sur sunshine"
+    "noApps": "Aucune application trouvé sur sunshine",
+    "actions": "Actions"
   }
 }

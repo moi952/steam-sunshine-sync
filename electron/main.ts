@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, protocol } from "electron";
 import path from "path";
+import * as os from "os";
 import dotenv from "dotenv";
 import {
   registerIpcAppSettings,
@@ -18,7 +19,14 @@ let mainWindow: BrowserWindow | null = null;
 registerIpcPathDectector();
 
 registerIpcSunshineApi();
+const normalizePath = (filePath: string): string => {
+  if (filePath.startsWith("~")) {
+    return path.join(os.homedir(), filePath.slice(1));
+  }
+  return path.normalize(filePath);
+};
 
+ipcMain.handle("normalizePath", (_, filePath: string) => normalizePath(filePath));
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,

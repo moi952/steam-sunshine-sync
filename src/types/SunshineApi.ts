@@ -1,8 +1,14 @@
-import { SunshineAppConfig } from "./SunshineAppConfig";
+import { SunshineAppConfigNew } from "./SunshineAppConfigNew";
 
-export type ResponseSunshine = {
+export type SunshineGetAppsResponse = {
   env: {
     PATH: string;
   };
-  apps: SunshineAppConfig[];
+  apps: SunshineAppConfigNew[];
+};
+
+export type SunshineCreateAppResponse = {
+  status: boolean;
+  status_code?: string;
+  error?: string;
 };

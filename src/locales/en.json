@@ -64,8 +64,8 @@
     "index": "Index",
     "excludeGlobalPrepCmd": "Exclude Global Prep Cmd",
     "elevated": "Elevated",
-    "autoDetach": "Auto Detach",
-    "waitAll": "Wait All",
+    "autoDetach": "Continue streaming if the application exits quickly",
+    "waitAll": "Continue streaming until all app processes exit",
     "exitTimeout": "Exit Timeout",
     "imagePath": "Image Path",
     "prepCommands": "Prep Commands",
@@ -73,11 +73,14 @@
     "undoCommand": "Undo Command",
     "detachedProcesses": "Detached Processes",
     "addPrepCommand": "Add Prep Command",
+    "workingDir": "Start in",
     "remove": "Remove",
-    "save": "Save"
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "sunshinePage": {
     "title": "List of sunshine applications",
-    "noApps": "No applications found on sunshine"
+    "noApps": "No applications found on sunshine",
+    "actions": "Actions"
   }
 }

@@ -4,9 +4,9 @@ import { App, Config } from "./modules/sunshineService";
 contextBridge.exposeInMainWorld("electronSunshineApi", {
   getApps: () => ipcRenderer.invoke("sunshine:getApps"),
   createApp: (appData: App) => ipcRenderer.invoke("sunshine:createApp", appData),
-  updateApp: (appId: string, appData: App) =>
+  updateApp: (appId: number, appData: App) =>
     ipcRenderer.invoke("sunshine:updateApp", appId, appData),
-  deleteApp: (appId: string) => ipcRenderer.invoke("sunshine:deleteApp", appId),
+  deleteApp: (appId: number) => ipcRenderer.invoke("sunshine:deleteApp", appId),
   getConfig: () => ipcRenderer.invoke("sunshine:getConfig"),
   updateConfig: (configData: Config) => ipcRenderer.invoke("sunshine:updateConfig", configData),
 });
@@ -21,6 +21,8 @@ contextBridge.exposeInMainWorld("electron", {
   openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
   detectSunshinePath: () => ipcRenderer.invoke("path-detector:detectSunshine"),
   detectSteamPath: () => ipcRenderer.invoke("path-detector:getSteamPath"),
+  normalizePath: (filePath: string): Promise<string> =>
+    ipcRenderer.invoke("normalizePath", filePath),
 });
 
 // Expose the game scanner API to the renderer process

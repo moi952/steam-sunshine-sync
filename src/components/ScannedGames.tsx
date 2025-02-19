@@ -181,9 +181,11 @@ const ScannedGames: React.FC = () => {
         <Button variant="contained" color="primary" onClick={scanSteamGames} disabled={loading}>
           {loading ? <CircularProgress size={24} /> : t("scannedGamesPage.scanGames")}
         </Button>
-        <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
-          {t("scannedGamesPage.addFakeData")}
-        </Button>
+        {process.env.REACT_APP_ENV === "dev" && (
+          <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
+            Add fake datas
+          </Button>
+        )}
       </Stack>
 
       {/* Section for removed games */}
