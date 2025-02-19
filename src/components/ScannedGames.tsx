@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SteamGame } from "steam-library-scanner";
-import { Box, Button, CircularProgress, Grid2, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Grid2, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useSettings } from "../context/SettingsContext";
 import { steamService } from "../services/steamService";
@@ -22,6 +22,9 @@ const ScannedGames: React.FC = () => {
   const [nonSteamGames, setNonSteamGames] = useState<LabeledSteamGame[]>([]);
   const [removedGames, setRemovedGames] = useState<SteamGame[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const steamCrendentialIsNotSet = !settings.steamPath || !settings.steamId;
 
   // Load saved games from scannedGames storage on component mount
   const loadSavedGames = async () => {
@@ -40,17 +43,19 @@ const ScannedGames: React.FC = () => {
       setNonSteamGames(savedNonSteamGames);
       // Removed games are not stored so we leave this empty on initial load
       setRemovedGames([]);
-    } catch (error) {
-      console.error("Error loading saved games:", error);
+    } catch (err) {
+      console.error("Error loading saved games:", err);
+      setError(t("scannedGamesPage.errorLoadingSavedGames"));
     }
   };
   useEffect(() => {
     loadSavedGames();
+    if (steamCrendentialIsNotSet) setError(t("scannedGamesPage.steamPathOrIdNotSet"));
   }, []);
 
   // Function to scan games and synchronize with stored data
   const scanSteamGames = async () => {
-    if (!settings.steamPath || !settings.steamId) {
+    if (steamCrendentialIsNotSet) {
       alert(t("scannedGamesPage.steamPathOrIdNotSet"));
       return;
     }
@@ -58,7 +63,7 @@ const ScannedGames: React.FC = () => {
     try {
       // Retrieve Steam and non-Steam games
       const { steamGames: loadedSteamGames, nonSteamGames: loadedNonSteamGames } =
-        await steamService.scanGames(settings.steamPath, settings.steamId);
+        await steamService.scanGames(settings.steamPath!, settings.steamId!);
       const allScannedGames: SteamGame[] = [...loadedSteamGames, ...loadedNonSteamGames];
 
       console.log("allScannedGames", allScannedGames);
@@ -103,8 +108,9 @@ const ScannedGames: React.FC = () => {
       setSteamGames(labeledSteamGames);
       setNonSteamGames(labeledNonSteamGames);
       setRemovedGames(removed);
-    } catch (error) {
-      console.error("Error scanning games:", error);
+    } catch (err) {
+      console.error("Error scanning games:", err);
+      setError(t("scannedGamesPage.errorScanningGames"));
       alert(`${t("scannedGamesPage.errorScanningGames")}: ${steamService.errorMessage}`);
     } finally {
       setLoading(false);
@@ -159,8 +165,8 @@ const ScannedGames: React.FC = () => {
 
       // Refresh UI by reloading saved games
       await loadSavedGames();
-    } catch (error) {
-      console.error("Error adding fake data:", error);
+    } catch (err) {
+      console.error("Error adding fake data:", err);
       alert("Erreur lors de l'ajout de fausses données");
     } finally {
       setLoading(false);
@@ -174,13 +180,19 @@ const ScannedGames: React.FC = () => {
         padding: 2,
         backgroundColor: theme.palette.background.default,
         color: theme.palette.text.primary,
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
       }}
     >
+      {error && <Alert severity="error">{error}</Alert>}
       {/* Action buttons at the top */}
-      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
-        <Button variant="contained" color="primary" onClick={scanSteamGames} disabled={loading}>
-          {loading ? <CircularProgress size={24} /> : t("scannedGamesPage.scanGames")}
-        </Button>
+      <Stack direction="row" spacing={2}>
+        {!steamCrendentialIsNotSet && (
+          <Button variant="contained" color="primary" onClick={scanSteamGames} disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : t("scannedGamesPage.scanGames")}
+          </Button>
+        )}
         {process.env.REACT_APP_ENV === "dev" && (
           <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
             Add fake datas
@@ -205,7 +217,7 @@ const ScannedGames: React.FC = () => {
       )}
 
       {/* Section for Steam games */}
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" sx={{ margin: 0 }}>
         {t("scannedGamesPage.steamGames")}
       </Typography>
       <Grid2 container spacing={3}>
@@ -222,7 +234,7 @@ const ScannedGames: React.FC = () => {
       </Grid2>
 
       {/* Section for Non-Steam games */}
-      <Typography variant="h4" gutterBottom sx={{ mt: 4 }}>
+      <Typography variant="h4" sx={{ margin: 0 }}>
         {t("scannedGamesPage.nonSteamGames")}
       </Typography>
       <Grid2 container spacing={3}>

@@ -5,6 +5,7 @@
     "gameStatusRemoved": "Supprimé"
   },
   "menu": {
+    "home": "Accueil",
     "scan_games": "Analyser les jeux",
     "configure_games": "Configurer les jeux",
     "export_games": "Exporter les jeux",
@@ -53,6 +54,8 @@
     "nonSteamGames": "Jeux non Steam",
     "noNonSteamGames": "Aucun jeu non Steam trouvé.",
     "steamPathOrIdNotSet": "Le chemin Steam ou l'ID Steam n'est pas défini.",
+    "errorLoadingSavedGames": "Erreur lors du chargement des jeux sauvegardés",
+    "errorScanningGames": "Erreur lors du scan des jeux",
     "removedGames": "Jeux supprimés de l'application"
   },
   "sunshineGameConfig": {
@@ -80,7 +83,8 @@
   },
   "sunshinePage": {
     "title": "Liste des application sunshine",
-    "noApps": "Aucune application trouvé sur sunshine",
+    "noApps": "Aucune application trouvé sur sunshine.",
+    "noCredentials": "Les identifiants Sunshine ne sont pas définis, veuillez vérifier vos paramètres.",
     "actions": "Actions"
   }
 }

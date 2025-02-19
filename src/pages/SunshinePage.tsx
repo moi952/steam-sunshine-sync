@@ -48,7 +48,8 @@ const SunshinePage: React.FC = () => {
     }
   };
   useEffect(() => {
-    fetchApps();
+    if (settings.sunshineLogin && settings.sunshinePassword) fetchApps();
+    else setError(t("sunshinePage.noCredentials"));
   }, []);
 
   useEffect(() => {

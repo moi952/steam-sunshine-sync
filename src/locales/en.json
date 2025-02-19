@@ -5,6 +5,7 @@
     "gameStatusRemoved": "Removed"
   },
   "menu": {
+    "home": "Home",
     "scan_games": "Scan Games",
     "configure_games": "Configure Games",
     "export_games": "Export Games",
@@ -53,6 +54,8 @@
     "nonSteamGames": "Non-Steam Games",
     "noNonSteamGames": "No non-Steam games found.",
     "steamPathOrIdNotSet": "Steam path or Steam ID is not set.",
+    "errorLoadingSavedGames": "Error loading saved games",
+    "errorScanningGames": "Error scanning games",
     "removedGames": "Deleted games"
   },
   "sunshineGameConfig": {
@@ -80,7 +83,8 @@
   },
   "sunshinePage": {
     "title": "List of sunshine applications",
-    "noApps": "No applications found on sunshine",
+    "noApps": "No applications found on sunshine.",
+    "noCredentials": "Sunshine credentials not set, please check your settings.",
     "actions": "Actions"
   }
 }
