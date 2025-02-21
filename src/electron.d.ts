@@ -1,5 +1,29 @@
-import { GameCollections, SunshineGetAppsResponse, SunshineConfig } from "./types";
+import { SteamGame } from "steam-library-scanner";
+import {
+  GameCollections,
+  SunshineGetAppsResponse,
+  SunshineConfig,
+  ScannedGamesConfig,
+  SyncResult,
+} from "./types";
 import { SunshineCreateAppResponse } from "./types/SunshineApi";
+import {
+  ApplySyncResultResponse,
+  GetScannedGameByIdResponse,
+  GetScannedGamesResponse,
+  RemoveGamesResponse,
+  SetScannedGamesResponse,
+  SyncScannedGamesResponse,
+} from "./types/ScannedGamesResponse";
+
+export interface NewElectronGameStorageApi {
+  getScannedGames: () => Promise<GetScannedGamesResponse>;
+  getScannedGameById: (_uniqueId: string) => Promise<GetScannedGameByIdResponse>;
+  setScannedGames: (_games: ScannedGamesConfig[]) => Promise<SetScannedGamesResponse>;
+  syncScannedGames: (_newGames: SteamGame[]) => Promise<SyncScannedGamesResponse>;
+  applySyncResult: (_syncResult: SyncResult) => Promise<ApplySyncResultResponse>;
+  removeGames: (_ids: string[]) => Promise<RemoveGamesResponse>;
+}
 
 declare global {
   interface Window {
@@ -21,11 +45,10 @@ declare global {
       saveSettings: (_settings: Record<string, any>) => Promise<void>;
     };
     electronGameStorageApi: {
-      getScannedGames: () => Promise<GameCollections["scannedGames"]>;
-      setScannedGames: (_games: GameCollections["scannedGames"]) => Promise<void>;
       getExportedGames: () => Promise<GameCollections["exportedGames"]>;
       setExportedGames: (_games: GameCollections["exportedGames"]) => Promise<void>;
     };
+    newElectronGameStorageApi: NewElectronGameStorageApi;
     electronSunshineApi: {
       getApps: () => Promise<SunshineGetAppsResponse>;
       createApp: (_appData: any) => Promise<SunshineCreateAppResponse>;

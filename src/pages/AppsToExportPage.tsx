@@ -7,8 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 import { ExportGameConfig, ScannedGamesConfig } from "../types";
 import GameDropdown from "../components/GameDropdown";
 import { exportedGamesService } from "../services/exportedGamesService";
-import { scannedGamesService } from "../services/scannedGamesService";
 import GameCard from "../components/GameCard";
+import ScannedGamesClient from "../services/scannedGamesClient";
 
 const AppsToExportPage: React.FC = () => {
   const { t } = useTranslation();
@@ -33,13 +33,17 @@ const AppsToExportPage: React.FC = () => {
     };
 
     const fetchScannedGames = async () => {
-      try {
-        const games = await scannedGamesService.getScannedGames();
-        console.log("Scanned games", games);
+      const scannedGamesResult = await ScannedGamesClient.getScannedGames();
 
-        setScannedGames(games);
-      } catch (error) {
-        console.error("Error fetching scanned games:", error);
+      if (
+        scannedGamesResult.success &&
+        scannedGamesResult.data &&
+        Array.isArray(scannedGamesResult.data)
+      ) {
+        console.log("Scanned games", scannedGamesResult.data);
+        setScannedGames(scannedGamesResult.data);
+      } else {
+        console.error("Invalid response structure", scannedGamesResult);
       }
     };
 

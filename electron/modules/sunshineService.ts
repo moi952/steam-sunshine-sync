@@ -63,7 +63,7 @@ export class SunshineService {
 
   // --- Endpoints Apps ---
 
-  private getAppWithMandatoryFields() {
+  private static getAppWithMandatoryFields() {
     return {
       "prep-cmd": [],
       "detached": [],
@@ -114,7 +114,7 @@ export class SunshineService {
   }
 
   public async createApp(appData: any): Promise<App> {
-    const emptyAppWithMandatoryFields = this.getAppWithMandatoryFields();
+    const emptyAppWithMandatoryFields = SunshineService.getAppWithMandatoryFields();
     const data = {
       ...emptyAppWithMandatoryFields,
       ...appData,
@@ -125,7 +125,7 @@ export class SunshineService {
   }
 
   public async updateApp(appId: string, appData: any): Promise<App> {
-    const emptyAppWithMandatoryFields = this.getAppWithMandatoryFields();
+    const emptyAppWithMandatoryFields = SunshineService.getAppWithMandatoryFields();
     const data = {
       ...emptyAppWithMandatoryFields,
       ...appData,

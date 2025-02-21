@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { contextBridge, ipcRenderer } from "electron";
 import { App, Config } from "./modules/sunshineService";
 
@@ -40,10 +41,17 @@ contextBridge.exposeInMainWorld("electronSteamLibraryScannerApi", {
 
 //
 contextBridge.exposeInMainWorld("electronGameStorageApi", {
-  getScannedGames: () => ipcRenderer.invoke("get-scanned-games"),
-  setScannedGames: (games: any) => ipcRenderer.invoke("set-scanned-games", games),
   getExportedGames: () => ipcRenderer.invoke("get-exported-games"),
   setExportedGames: (games: any) => ipcRenderer.invoke("set-exported-games", games),
+});
+
+contextBridge.exposeInMainWorld("newElectronGameStorageApi", {
+  getScannedGames: () => ipcRenderer.invoke("getScannedGames"),
+  getScannedGameById: (uniqueId: string) => ipcRenderer.invoke("getScannedGameById", uniqueId),
+  setScannedGames: (games: any) => ipcRenderer.invoke("setScannedGames", games),
+  syncScannedGames: (newGames: any) => ipcRenderer.invoke("syncScannedGames", newGames),
+  applySyncResult: (syncResult: any) => ipcRenderer.invoke("applySyncResult", syncResult),
+  removeGames: (ids: string[]) => ipcRenderer.invoke("removeGames", ids),
 });
 
 contextBridge.exposeInMainWorld("cryptoAPI", {

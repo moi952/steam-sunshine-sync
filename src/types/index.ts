@@ -8,3 +8,4 @@ export type { SunshineGetAppsResponse } from "./SunshineApi";
 export type { SunshineAppConfig, PrepCommand } from "./SunshineAppConfig";
 export type { SunshineConfig } from "./SunshineConfig";
 export type { SteamUserType } from "./SteamUserType";
+export type { SyncResult } from "./SyncResult";

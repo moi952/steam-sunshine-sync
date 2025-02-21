@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { app, BrowserWindow, dialog, ipcMain, protocol } from "electron";
 import path from "path";
 import * as os from "os";
@@ -9,6 +10,7 @@ import {
   registerIpcPathDectector,
   registerIpcSteamLibraryScanner,
   registerIpcSunshineApi,
+  registerScannedGamesIpc,
 } from "./ipcHandlers";
 
 dotenv.config();
@@ -63,6 +65,7 @@ registerIpcAppSettings();
 registerIpcSteamLibraryScanner();
 // Register IPC handlers for game storage
 registerIpcGameStorage();
+registerScannedGamesIpc();
 
 // Initialize the Electron application
 app.whenReady().then(() => {

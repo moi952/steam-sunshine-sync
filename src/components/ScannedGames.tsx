@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import { v4 as uuidv4 } from "uuid";
 import { useSettings } from "../context/SettingsContext";
 import { steamService } from "../services/steamService";
-import { scannedGamesService } from "../services/scannedGamesService";
+import ScannedGamesClient from "../services/scannedGamesClient";
 import GameCard, { gameStatus } from "./GameCard";
 import { ScannedGamesConfig } from "../types";
 
@@ -31,10 +31,10 @@ const ScannedGames: React.FC = () => {
   // Load saved games from scannedGames storage on component mount
   const loadSavedGames = async () => {
     try {
-      const savedGamesConfig = await scannedGamesService.getScannedGames();
+      const savedGamesConfig = await ScannedGamesClient.getScannedGames();
       console.log("savedGamesConfig : ", savedGamesConfig);
       // Map saved games to LabeledSteamGame (using gameDetails)
-      const savedGames: LabeledSteamGame[] = savedGamesConfig.map((config) => ({
+      const savedGames: LabeledSteamGame[] = savedGamesConfig.data.map((config) => ({
         ...config.gameDetails,
         syncStatus: undefined,
       }));
@@ -71,16 +71,23 @@ const ScannedGames: React.FC = () => {
       console.log("allScannedGames", allScannedGames);
 
       // Synchronize scanned games with stored games
-      const syncResult = await scannedGamesService.syncScannedGames(allScannedGames);
+      const syncResult = await ScannedGamesClient.syncScannedGames(allScannedGames);
       console.log("syncResult", syncResult);
-      await scannedGamesService.applySyncResult(syncResult);
+      if (!syncResult.success) throw syncResult.error || t("scannedGamesPage.errorScanningGames");
+
+      if (syncResult.syncResult) await ScannedGamesClient.applySyncResult(syncResult.syncResult);
+      else throw t("scannedGamesPage.errorScanningGames");
 
       // Determine sync status for each game ("new" or "updated")
       const getSyncStatus = (game: SteamGame): "new" | "updated" | "" => {
-        if (syncResult.toAdd.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)) {
+        if (
+          syncResult.syncResult?.toAdd.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)
+        ) {
           return "new";
         }
-        if (syncResult.toUpdate.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)) {
+        if (
+          syncResult.syncResult?.toUpdate.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)
+        ) {
           return "updated";
         }
         return "";
@@ -97,10 +104,10 @@ const ScannedGames: React.FC = () => {
       const labeledNonSteamGames = labeledGames.filter((game) => !game.appId || game.appId === "0");
 
       // Filter removed games (exclude those that are updated)
-      const removed = syncResult.toRemove
+      const removed = syncResult.syncResult?.toRemove
         .filter(
           (syncGame) =>
-            !syncResult.toUpdate.some(
+            !syncResult.syncResult?.toUpdate.some(
               (updateGame) => updateGame.gameDetails.cmd === syncGame.gameDetails.cmd,
             ),
         )
@@ -138,14 +145,14 @@ const ScannedGames: React.FC = () => {
 
     const fakeGames: SteamGame[] = [fakeSteamGame, fakeNonSteamGame];
 
-    // Stable unique ID generator (must match the one used in scannedGamesService)
+    // Stable unique ID generator (must match the one used in scannedGamesClient)
     const generateUniqueId = (game: SteamGame): string => `${game.cmd}_${game.appId}`;
     const isSteamGame = (game: SteamGame): boolean => Boolean(game.appId && game.appId !== "0");
 
     setLoading(true);
     try {
       // Retrieve current saved games
-      const savedGames = await scannedGamesService.getScannedGames();
+      const savedGames = await ScannedGamesClient.getScannedGames();
 
       // Convert fake games to the StoredGame format
       const newFakeStoredGames: ScannedGamesConfig[] = fakeGames.map((game) => ({
@@ -156,7 +163,7 @@ const ScannedGames: React.FC = () => {
       }));
 
       // Merge new fake games with the existing saved games (avoid duplicates)
-      const mergedGames = [...savedGames];
+      const mergedGames = [...savedGames.data];
       newFakeStoredGames.forEach((fakeGame: ScannedGamesConfig) => {
         if (!mergedGames.some((storedGame) => storedGame.id === fakeGame.id)) {
           mergedGames.push(fakeGame);
@@ -164,7 +171,7 @@ const ScannedGames: React.FC = () => {
       });
 
       // Save the merged list back to storage
-      await scannedGamesService.setScannedGames(mergedGames);
+      await ScannedGamesClient.setScannedGames(mergedGames);
 
       // Refresh UI by reloading saved games
       await loadSavedGames();
@@ -179,7 +186,7 @@ const ScannedGames: React.FC = () => {
   const removeAll = async () => {
     setLoading(true);
     try {
-      await scannedGamesService.setScannedGames([]);
+      await ScannedGamesClient.setScannedGames([]);
       setSteamGames([]);
       setNonSteamGames([]);
       setRemovedGames([]);

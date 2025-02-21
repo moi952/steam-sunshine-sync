@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ipcMain } from "electron";
 import {
   getAllSteamGames,
@@ -11,6 +12,7 @@ import SettingsService from "./modules/settingsService";
 import { PathDetector } from "./modules/PathDetector";
 import { SunshineService } from "./modules/sunshineService";
 import { decrypt, encrypt } from "./modules/cryptoService";
+import { scannedGamesService } from "./modules/ScannedGamesService";
 
 const settingsService = new SettingsService();
 const pathDetector = new PathDetector();
@@ -55,13 +57,33 @@ export function registerIpcSteamLibraryScanner() {
   );
 }
 
+export function registerScannedGamesIpc() {
+  // Retrieve all scanned games
+  ipcMain.handle("getScannedGames", async () => scannedGamesService.getScannedGames());
+
+  // Retrieve a specific game by its uniqueId
+  ipcMain.handle("getScannedGameById", async (_, uniqueId: string) =>
+    scannedGamesService.getScannedGameById(uniqueId),
+  );
+
+  // Set all scanned games
+  ipcMain.handle("setScannedGames", async (_, games) => scannedGamesService.setScannedGames(games));
+
+  // Synchronize scanned games
+  ipcMain.handle("syncScannedGames", async (_, newGames) =>
+    scannedGamesService.syncScannedGames(newGames),
+  );
+
+  // Apply synchronization results
+  ipcMain.handle("applySyncResult", async (_, syncResult) =>
+    scannedGamesService.applySyncResult(syncResult),
+  );
+
+  // Delete games by ID
+  ipcMain.handle("removeGames", async (_, ids) => scannedGamesService.removeGames(ids));
+}
+
 export function registerIpcGameStorage() {
-  ipcMain.handle("get-scanned-games", () => config.get("scannedGames"));
-
-  ipcMain.handle("set-scanned-games", (_event, games: GameCollections["scannedGames"]) => {
-    config.set("scannedGames", games);
-  });
-
   ipcMain.handle("get-exported-games", () => config.get("exportedGames"));
 
   ipcMain.handle("set-exported-games", (_event, games: GameCollections["exportedGames"]) => {

@@ -6,8 +6,8 @@ import { ArrowBack } from "@mui/icons-material";
 import { ScannedGamesConfig, SunshineAppConfig } from "../types";
 import AppConfig from "../components/AppConfig";
 import { initSunshineAppFromScannedGame } from "../utils/sunshineAppHelper";
-import { scannedGamesService } from "../services/scannedGamesService";
 import { exportedGamesService } from "../services/exportedGamesService";
+import ScannedGamesClient from "../services/scannedGamesClient";
 
 const CreateAppConfigPage = () => {
   const { t } = useTranslation();
@@ -21,21 +21,32 @@ const CreateAppConfigPage = () => {
     console.log("scannedGameId", scannedGameId);
     if (scannedGameId !== undefined) {
       try {
-        const loadedScannedGame = await scannedGamesService.getScannedGameById(scannedGameId);
-        if (!loadedScannedGame) {
-          setErrorMsg("Jeu scanné introuvable");
+        const loadedScannedGameResponse =
+          await ScannedGamesClient.getScannedGameById(scannedGameId);
+
+        // Check if the success flag is true
+        if (!loadedScannedGameResponse.success) {
+          setErrorMsg("Scanned game not found or failed to fetch");
           return;
         }
-        setScannedGame(loadedScannedGame);
-        // Ici, vous pouvez utiliser scannedGame pour initialiser le formulaire
-        const newApp = initSunshineAppFromScannedGame(loadedScannedGame);
+
+        if (!loadedScannedGameResponse.data) {
+          setErrorMsg("Scanned game not found or failed to fetch");
+          return;
+        }
+
+        // If success is true, proceed with the game
+        setScannedGame(loadedScannedGameResponse.data);
+
+        // Initialize the app from the scanned game
+        const newApp = initSunshineAppFromScannedGame(loadedScannedGameResponse.data);
         setSunshineConfig(newApp);
       } catch (error) {
-        console.error("Erreur lors de la récupération du jeu exporté", error);
-        setErrorMsg("Erreur lors de la récupération du jeu exporté");
+        console.error("Error fetching exported game", error);
+        setErrorMsg("Error retrieving the exported game");
       }
     } else {
-      setErrorMsg("Aucun scannedGameId fourni");
+      setErrorMsg("No scannedGameId provided");
     }
   }
 

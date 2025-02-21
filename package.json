@@ -52,17 +52,43 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "prettier": "prettier",
+    "eslint": "eslint",
     "postinstall": "electron-builder install-app-deps",
     "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3000 && tsc -p electron && electron .\"",
     "electron:build": "yarn build && tsc -p electron && electron-builder",
     "eject": "react-scripts eject",
-    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
-    "eslint": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
+    "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
+    "eslint:write": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
     "prettier:check": "prettier --check --loglevel debug \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
     "eslint:check": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
     "update-release": "node .github/scripts/update-version.js",
     "zipPortable:win": "powershell -Command \"if ($env:OS -eq 'Windows_NT') { Compress-Archive -Path dist/win-unpacked/* -DestinationPath dist/$${env:npm_package_build_productName}-$${env:npm_package_version}-win-x64-portable.zip } else { Write-Host 'Unsupported OS' }\"",
     "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.js": [
+      "yarn eslint -- --fix",
+      "yarn prettier -- --write"
+    ],
+    "*.ts": [
+      "yarn eslint -- --fix",
+      "yarn prettier -- --write"
+    ],
+    "*.jsx": [
+      "yarn eslint -- --fix",
+      "yarn prettier -- --write"
+    ],
+    "*.tsx": [
+      "yarn eslint -- --fix",
+      "yarn prettier -- --write"
+    ],
+    "*.json": [
+      "yarn prettier -- --write"
+    ],
+    "*.md": [
+      "yarn prettier -- --write"
+    ]
   },
   "build": {
     "appId": "com.example.steam-sunshine-sync",
