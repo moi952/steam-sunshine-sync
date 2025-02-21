@@ -1,44 +1,76 @@
-import { Card, CardContent, CardMedia, Grid2, Typography, Box } from "@mui/material";
+import { Card, CardContent, CardMedia, Grid2, Typography, Box, CardActions } from "@mui/material";
 import React from "react";
 import { useTheme } from "@mui/material/styles";
-import { SteamGame } from "steam-library-scanner";
+import { v4 as uuidv4 } from "uuid";
 import { useTranslation } from "react-i18next";
 
-export type gameStatus = "new" | "updated" | "removed" | undefined;
+export type gameStatus = "new" | "updated" | "removed" | "nonExported" | "exported" | undefined;
 
 interface GameCardProps {
-  game: SteamGame;
+  gameTitle: string;
+  imagePath: string;
   status?: gameStatus;
+  actions?: React.ReactNode;
+  onClick?: () => void;
 }
 
-const GameCard: React.FC<GameCardProps> = ({ game, status }) => {
+const GameCard: React.FC<GameCardProps> = ({ status, actions, gameTitle, imagePath, onClick }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const imageURL = `local://${game.imagePath.replace(/\\/g, "/")}`;
+  const imageURL = `local://${imagePath.replace(/\\/g, "/")}`;
+  const statusConfig = {
+    new: {
+      color: "green",
+      text: t("general.gameStatusNew"),
+    },
+    updated: {
+      color: "orange",
+      text: t("general.gameStatusUpdated"),
+    },
+    removed: {
+      color: "red",
+      text: t("general.gameStatusRemoved"),
+    },
+    exported: {
+      color: "green",
+      text: t("general.appExported"),
+    },
+    nonExported: {
+      color: "orange",
+      text: t("general.appNonExported"),
+    },
+  };
 
   const getBackgroundColor = () => {
-    if (status === "new") return "green";
-    if (status === "updated") return "orange";
-    if (status === "removed") return "red";
+    if (status && statusConfig[status]) {
+      return statusConfig[status].color;
+    }
 
     return "";
   };
 
   const getStatus = () => {
-    if (status === "new") return t("general.gameStatusNew");
-    if (status === "updated") return t("general.gameStatusUpdated");
-    if (status === "removed") return t("general.gameStatusRemoved");
+    if (status && statusConfig[status]) {
+      return statusConfig[status].text;
+    }
 
     return "";
   };
 
   return (
-    <Grid2 key={game.name}>
+    <Grid2 key={uuidv4()}>
       <Card
+        onClick={onClick}
         sx={{
           width: 190,
           backgroundColor: theme.palette.background.paper,
           position: "relative",
+          ...(onClick && { cursor: "pointer" }),
+          ...(actions && {
+            "&:hover .cardActions": {
+              display: "flex",
+            },
+          }),
         }}
       >
         {status && (
@@ -67,7 +99,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, status }) => {
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
-          title={game.name}
+          title={gameTitle}
         />
         <CardContent
           sx={{
@@ -77,9 +109,25 @@ const GameCard: React.FC<GameCardProps> = ({ game, status }) => {
           }}
         >
           <Typography variant="body2" component="div" noWrap>
-            <b>{game.name}</b>
+            <b>{gameTitle}</b>
           </Typography>
         </CardContent>
+        {actions && (
+          <CardActions
+            className="cardActions"
+            sx={{
+              position: "absolute",
+              width: "100%",
+              justifyContent: "center",
+              bottom: "40px",
+              display: "none",
+              // backgroundColor: theme.palette.background.paper,
+              gap: 1,
+            }}
+          >
+            {actions}
+          </CardActions>
+        )}
       </Card>
     </Grid2>
   );

@@ -2,41 +2,41 @@ import React, { useEffect, useState } from "react";
 import { TextField, Button, Box } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Cancel, Save } from "@mui/icons-material";
-import { SunshineAppConfigNew, PrepCommand } from "../types";
+import { SunshineAppConfig, PrepCommand } from "../types";
 import PrepCommands from "./PrepCommands";
 import CheckboxField from "./CheckboxField";
 import DetachedCommands from "./DetachedCommands";
 
-interface GameConfigProps {
-  gameDetails: SunshineAppConfigNew;
+interface AppConfigProps {
+  appDetails: SunshineAppConfig;
   onSave: (_appSetting: any) => void;
   handleCancel?: (_appSetting: any) => void;
 }
 
-const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCancel }) => {
-  const [currentGameDetails, setCurrentGameDetails] = useState<SunshineAppConfigNew>(gameDetails);
+const AppConfig: React.FC<AppConfigProps> = ({ appDetails, onSave, handleCancel }) => {
+  const [currentAppDetails, setCurrentAppDetails] = useState<SunshineAppConfig>(appDetails);
   const { t } = useTranslation();
 
   useEffect(() => {
-    setCurrentGameDetails(gameDetails);
-  }, [gameDetails]);
+    setCurrentAppDetails(appDetails);
+  }, [appDetails]);
 
-  const handleCheckboxChange = (field: keyof SunshineAppConfigNew) => {
-    setCurrentGameDetails((prevDetails) => ({
+  const handleCheckboxChange = (field: keyof SunshineAppConfig) => {
+    setCurrentAppDetails((prevDetails) => ({
       ...prevDetails,
       [field]: !prevDetails[field],
     }));
   };
 
-  const handleChange = (field: keyof SunshineAppConfigNew, value: any) => {
-    setCurrentGameDetails((prevDetails) => ({
+  const handleChange = (field: keyof SunshineAppConfig, value: any) => {
+    setCurrentAppDetails((prevDetails) => ({
       ...prevDetails,
       [field]: value,
     }));
   };
 
   const handlePrepCmdChange = (index: number, field: keyof PrepCommand, value: any) => {
-    setCurrentGameDetails((prevDetails) => {
+    setCurrentAppDetails((prevDetails) => {
       const updatedPrepCmd = [...(prevDetails["prep-cmd"] || [])];
       updatedPrepCmd[index] = { ...updatedPrepCmd[index], [field]: value };
       return {
@@ -47,14 +47,14 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
   };
 
   const addPrepCmd = () => {
-    setCurrentGameDetails((prevDetails) => ({
+    setCurrentAppDetails((prevDetails) => ({
       ...prevDetails,
       "prep-cmd": [...(prevDetails["prep-cmd"] || []), { do: "", undo: "", elevated: false }],
     }));
   };
 
   const removePrepCmd = (index: number) => {
-    setCurrentGameDetails((prevDetails) => {
+    setCurrentAppDetails((prevDetails) => {
       const updatedPrepCmd = [...(prevDetails["prep-cmd"] || [])];
       updatedPrepCmd.splice(index, 1);
       return {
@@ -65,14 +65,14 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
   };
 
   const addDetached = () => {
-    setCurrentGameDetails((prevDetails) => ({
+    setCurrentAppDetails((prevDetails) => ({
       ...prevDetails,
       detached: [...(prevDetails.detached || []), ""],
     }));
   };
 
   const removeDetached = (index: number) => {
-    setCurrentGameDetails((prevDetails) => {
+    setCurrentAppDetails((prevDetails) => {
       const updatedDetached = [...(prevDetails.detached || [])];
       updatedDetached.splice(index, 1);
       return {
@@ -83,7 +83,7 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
   };
 
   const handleDetachedChange = (index: number, value: string) => {
-    setCurrentGameDetails((prevDetails) => {
+    setCurrentAppDetails((prevDetails) => {
       const updatedDetached = [...(prevDetails.detached || [])];
       updatedDetached[index] = value;
       return {
@@ -93,18 +93,18 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
     });
   };
 
-  const saveGameDetails = () => {
-    onSave(currentGameDetails);
+  const saveAppDetails = () => {
+    onSave(currentAppDetails);
   };
 
   return (
-    <Box display="flex" flexDirection="column" gap="16px" sx={{ marginY: "24px" }}>
+    <Box display="flex" flexDirection="column" gap="16px" sx={{ paddingY: "24px" }}>
       {/* Sunshine Configuration Fields */}
       <TextField
         sx={{ margin: 0 }}
         size="small"
-        label={t("sunshineGameConfig.applicationName")}
-        value={currentGameDetails.name}
+        label={t("sunshineAppConfig.applicationName")}
+        value={currentAppDetails.name}
         onChange={(e) => handleChange("name", e.target.value)}
         fullWidth
         margin="normal"
@@ -113,8 +113,8 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
       <TextField
         sx={{ margin: 0 }}
         size="small"
-        label={t("sunshineGameConfig.logOutputPath")}
-        value={currentGameDetails.output}
+        label={t("sunshineAppConfig.logOutputPath")}
+        value={currentAppDetails.output}
         onChange={(e) => handleChange("output", e.target.value)}
         fullWidth
         margin="normal"
@@ -123,8 +123,8 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
       <TextField
         sx={{ margin: 0 }}
         size="small"
-        label={t("sunshineGameConfig.cmd")}
-        value={currentGameDetails.cmd}
+        label={t("sunshineAppConfig.cmd")}
+        value={currentAppDetails.cmd}
         onChange={(e) => handleChange("cmd", e.target.value)}
         fullWidth
         margin="normal"
@@ -133,41 +133,41 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
       <TextField
         sx={{ margin: 0 }}
         size="small"
-        label={t("sunshineGameConfig.workingDir")}
-        value={currentGameDetails["working-dir"]}
+        label={t("sunshineAppConfig.workingDir")}
+        value={currentAppDetails["working-dir"]}
         onChange={(e) => handleChange("working-dir", e.target.value)}
         fullWidth
         margin="normal"
       />
 
       <CheckboxField
-        label={t("sunshineGameConfig.excludeGlobalPrepCmd")}
-        checked={currentGameDetails["exclude-global-prep-cmd"] || true} // true by default in sunshine
+        label={t("sunshineAppConfig.excludeGlobalPrepCmd")}
+        checked={currentAppDetails["exclude-global-prep-cmd"] || false}
         onChange={() => handleCheckboxChange("exclude-global-prep-cmd")}
       />
       <CheckboxField
-        label={t("sunshineGameConfig.elevated")}
-        checked={currentGameDetails.elevated || false} // true by default in sunshine
+        label={t("sunshineAppConfig.elevated")}
+        checked={currentAppDetails.elevated || false}
         onChange={() => handleCheckboxChange("elevated")}
       />
       <CheckboxField
-        label={t("sunshineGameConfig.autoDetach")}
-        checked={currentGameDetails["auto-detach"] || true} // true by default in sunshine
+        label={t("sunshineAppConfig.autoDetach")}
+        checked={currentAppDetails["auto-detach"] || false}
         onChange={() => handleCheckboxChange("auto-detach")}
       />
 
       <CheckboxField
-        label={t("sunshineGameConfig.waitAll")}
-        checked={currentGameDetails["wait-all"] || true} // true by default in sunshine
+        label={t("sunshineAppConfig.waitAll")}
+        checked={currentAppDetails["wait-all"] || false}
         onChange={() => handleCheckboxChange("wait-all")}
       />
 
       <TextField
         sx={{ margin: 0 }}
         size="small"
-        label={t("sunshineGameConfig.exitTimeout")}
+        label={t("sunshineAppConfig.exitTimeout")}
         type="number"
-        value={currentGameDetails["exit-timeout"]}
+        value={currentAppDetails["exit-timeout"]}
         onChange={(e) => handleChange("exit-timeout", Number(e.target.value))}
         fullWidth
         margin="normal"
@@ -176,22 +176,22 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
       <TextField
         sx={{ margin: 0 }}
         size="small"
-        label={t("sunshineGameConfig.imagePath")}
-        value={currentGameDetails["image-path"]}
+        label={t("sunshineAppConfig.imagePath")}
+        value={currentAppDetails["image-path"]}
         onChange={(e) => handleChange("image-path", e.target.value)}
         fullWidth
         margin="normal"
       />
 
       <PrepCommands
-        prepCmds={currentGameDetails["prep-cmd"] || []}
+        prepCmds={currentAppDetails["prep-cmd"] || []}
         onChange={handlePrepCmdChange}
         onAdd={addPrepCmd}
         onRemove={removePrepCmd}
       />
 
       <DetachedCommands
-        detached={currentGameDetails.detached || []}
+        detached={currentAppDetails.detached || []}
         onChange={handleDetachedChange}
         onAdd={addDetached}
         onRemove={removeDetached}
@@ -209,15 +209,15 @@ const GameConfig: React.FC<GameConfigProps> = ({ gameDetails, onSave, handleCanc
             onClick={handleCancel}
             startIcon={<Cancel />}
           >
-            {t("sunshineGameConfig.cancel")}
+            {t("sunshineAppConfig.cancel")}
           </Button>
         )}
-        <Button variant="contained" color="primary" onClick={saveGameDetails} startIcon={<Save />}>
-          {t("sunshineGameConfig.save")}
+        <Button variant="contained" color="primary" onClick={saveAppDetails} startIcon={<Save />}>
+          {t("sunshineAppConfig.save")}
         </Button>
       </Box>
     </Box>
   );
 };
 
-export default GameConfig;
+export default AppConfig;

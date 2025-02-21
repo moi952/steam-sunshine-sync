@@ -22,7 +22,7 @@ const DetachedCommands: React.FC<{
       }}
     >
       <Typography variant="body1" gutterBottom>
-        {t("sunshineGameConfig.detachedProcesses")}
+        {t("sunshineAppConfig.detachedProcesses")}
       </Typography>
       {Array.isArray(detached) &&
         detached.map((detachedItem, index) => (
@@ -31,7 +31,7 @@ const DetachedCommands: React.FC<{
               <TextField
                 size="small"
                 fullWidth
-                label={t("sunshineGameConfig.detachedProcesses")}
+                label={t("sunshineAppConfig.detachedProcesses")}
                 value={detachedItem}
                 onChange={(e) => onChange(index, e.target.value)}
                 margin="normal"

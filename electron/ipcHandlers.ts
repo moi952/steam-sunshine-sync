@@ -62,12 +62,6 @@ export function registerIpcGameStorage() {
     config.set("scannedGames", games);
   });
 
-  ipcMain.handle("get-selected-games", () => config.get("selectedGames"));
-
-  ipcMain.handle("set-selected-games", (_event, games: GameCollections["selectedGames"]) => {
-    config.set("selectedGames", games);
-  });
-
   ipcMain.handle("get-exported-games", () => config.get("exportedGames"));
 
   ipcMain.handle("set-exported-games", (_event, games: GameCollections["exportedGames"]) => {

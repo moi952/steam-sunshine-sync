@@ -2,7 +2,9 @@
   "general": {
     "gameStatusNew": "Nouveau",
     "gameStatusUpdated": "Mis à jour",
-    "gameStatusRemoved": "Supprimé"
+    "gameStatusRemoved": "Supprimé",
+    "appExported": "Exporté",
+    "appNonExported": "À exporter"
   },
   "menu": {
     "home": "Accueil",
@@ -58,7 +60,7 @@
     "errorScanningGames": "Erreur lors du scan des jeux",
     "removedGames": "Jeux supprimés de l'application"
   },
-  "sunshineGameConfig": {
+  "sunshineAppConfig": {
     "pageTitle": "Configuration du jeu",
     "gameName": "Nom du jeu",
     "applicationName": "Nom de l'application",
@@ -86,5 +88,13 @@
     "noApps": "Aucune application trouvé sur sunshine.",
     "noCredentials": "Les identifiants Sunshine ne sont pas définis, veuillez vérifier vos paramètres.",
     "actions": "Actions"
+  },
+  "appsToExportPage": {
+    "selectGame": "Sélectionner un jeu pour créer une app Sunshine",
+    "title": "Apps à exporter",
+    "untitled": "Sans titre",
+    "exportNewApps": "Exporter les nouvelles apps",
+    "editBtn": "Modifier",
+    "deleteBtn": "Supprimer"
   }
 }

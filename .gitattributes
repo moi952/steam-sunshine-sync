@@ -1,1 +1,14 @@
-* text eol=lf
+# Apply LF to text files only
+*.ts text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+
+# Exclude binary files from any conversion
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.gif -text
+*.webp -text
+*.ico -text
+*.exe -text
+*.dll -text

@@ -44,7 +44,7 @@ const Menu: React.FC<MenuProps> = ({ themeMode, onThemeToggle, isMini }) => {
             <MenuItem
               isMini={!isMini}
               label={t("menu.export_games")}
-              path="/exported-games"
+              path="/apps-to-export"
               icon={<Gamepad />}
             />
             <MenuItem

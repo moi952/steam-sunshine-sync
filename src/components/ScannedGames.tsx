@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import { SteamGame } from "steam-library-scanner";
 import { Alert, Box, Button, CircularProgress, Grid2, Stack, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { v4 as uuidv4 } from "uuid";
 import { useSettings } from "../context/SettingsContext";
 import { steamService } from "../services/steamService";
 import { scannedGamesService } from "../services/scannedGamesService";
 import GameCard, { gameStatus } from "./GameCard";
+import { ScannedGamesConfig } from "../types";
 
 // Extend SteamGame with a syncStatus property
 interface LabeledSteamGame extends SteamGame {
@@ -146,15 +148,16 @@ const ScannedGames: React.FC = () => {
       const savedGames = await scannedGamesService.getScannedGames();
 
       // Convert fake games to the StoredGame format
-      const newFakeStoredGames = fakeGames.map((game) => ({
+      const newFakeStoredGames: ScannedGamesConfig[] = fakeGames.map((game) => ({
         id: generateUniqueId(game),
+        uniqueId: generateUniqueId(game),
         isSteamGame: isSteamGame(game),
         gameDetails: game,
       }));
 
       // Merge new fake games with the existing saved games (avoid duplicates)
       const mergedGames = [...savedGames];
-      newFakeStoredGames.forEach((fakeGame) => {
+      newFakeStoredGames.forEach((fakeGame: ScannedGamesConfig) => {
         if (!mergedGames.some((storedGame) => storedGame.id === fakeGame.id)) {
           mergedGames.push(fakeGame);
         }
@@ -168,6 +171,21 @@ const ScannedGames: React.FC = () => {
     } catch (err) {
       console.error("Error adding fake data:", err);
       alert("Erreur lors de l'ajout de fausses données");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeAll = async () => {
+    setLoading(true);
+    try {
+      await scannedGamesService.setScannedGames([]);
+      setSteamGames([]);
+      setNonSteamGames([]);
+      setRemovedGames([]);
+    } catch (err) {
+      console.error("Error removing all games:", err);
+      alert("Erreur lors de la suppression de tous les jeux");
     } finally {
       setLoading(false);
     }
@@ -194,9 +212,14 @@ const ScannedGames: React.FC = () => {
           </Button>
         )}
         {process.env.REACT_APP_ENV === "dev" && (
-          <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
-            Add fake datas
-          </Button>
+          <>
+            <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
+              Add fake datas
+            </Button>
+            <Button variant="contained" color="secondary" onClick={removeAll} disabled={loading}>
+              Delete all
+            </Button>
+          </>
         )}
       </Stack>
 
@@ -208,8 +231,8 @@ const ScannedGames: React.FC = () => {
           </Typography>
           <Grid2 container spacing={3} sx={{ mb: 4 }}>
             {removedGames.map((game) => (
-              <Grid2 key={game.cmd}>
-                <GameCard game={game} status="removed" />
+              <Grid2 key={uuidv4()}>
+                <GameCard status="removed" gameTitle={game.name} imagePath={game.imagePath} />
               </Grid2>
             ))}
           </Grid2>
@@ -227,8 +250,12 @@ const ScannedGames: React.FC = () => {
           </Typography>
         )}
         {steamGames.map((game) => (
-          <Grid2 key={game.cmd}>
-            <GameCard game={game} status={game.syncStatus || undefined} />
+          <Grid2 key={uuidv4()}>
+            <GameCard
+              status={game.syncStatus || undefined}
+              gameTitle={game.name}
+              imagePath={game.imagePath}
+            />
           </Grid2>
         ))}
       </Grid2>
@@ -244,8 +271,12 @@ const ScannedGames: React.FC = () => {
           </Typography>
         )}
         {nonSteamGames.map((game) => (
-          <Grid2 key={game.cmd}>
-            <GameCard game={game} status={game.syncStatus || undefined} />
+          <Grid2 key={uuidv4()}>
+            <GameCard
+              status={game.syncStatus || undefined}
+              gameTitle={game.name}
+              imagePath={game.imagePath}
+            />
           </Grid2>
         ))}
       </Grid2>

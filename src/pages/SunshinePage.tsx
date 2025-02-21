@@ -18,19 +18,19 @@ import { useTranslation } from "react-i18next";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { SunshineAppConfigNew } from "../types";
+import { SunshineAppConfig } from "../types";
 import { useSettings } from "../context/SettingsContext";
 import { normalizeLocalPath } from "../utils/pathFonctions";
-import GameConfig from "../components/GameConfig";
+import AppConfig from "../components/AppConfig";
 
 const SunshinePage: React.FC = () => {
   const { settings } = useSettings();
   const { t } = useTranslation();
-  const [sunshineApps, setSunshineApps] = useState<SunshineAppConfigNew[]>([]);
+  const [sunshineApps, setSunshineApps] = useState<SunshineAppConfig[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const [editedApp, setEditedApp] = useState<SunshineAppConfigNew | null>(null);
+  const [editedApp, setEditedApp] = useState<SunshineAppConfig | null>(null);
   const [normalizedImagePaths, setNormalizedImagePaths] = useState<{ [key: string]: string }>({});
 
   const fetchApps = async () => {
@@ -66,7 +66,7 @@ const SunshinePage: React.FC = () => {
     setEditedApp(null);
   };
 
-  const handleSave = async (app: SunshineAppConfigNew) => {
+  const handleSave = async (app: SunshineAppConfig) => {
     if (expandedIndex !== null && editedApp !== null) {
       console.log("index", expandedIndex);
       console.log("app", app);
@@ -138,8 +138,8 @@ const SunshinePage: React.FC = () => {
               <TableRow>
                 <TableCell />
                 <TableCell />
-                <TableCell>{t("sunshineGameConfig.applicationName")}</TableCell>
-                <TableCell>{t("sunshineGameConfig.cmd")}</TableCell>
+                <TableCell>{t("sunshineAppConfig.applicationName")}</TableCell>
+                <TableCell>{t("sunshineAppConfig.cmd")}</TableCell>
                 <TableCell>{t("sunshinePage.actions")}</TableCell>
               </TableRow>
             </TableHead>
@@ -178,8 +178,8 @@ const SunshinePage: React.FC = () => {
                       <Collapse in={expandedIndex === index} timeout="auto" unmountOnExit>
                         {editedApp && (
                           <Box sx={{ p: 2 }}>
-                            <GameConfig
-                              gameDetails={app}
+                            <AppConfig
+                              appDetails={app}
                               onSave={handleSave}
                               handleCancel={handleCancel}
                             />

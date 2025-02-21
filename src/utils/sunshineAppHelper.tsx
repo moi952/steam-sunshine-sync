@@ -1,8 +1,24 @@
-import { SunshineAppConfigNew } from "../types";
+import { ScannedGamesConfig, SunshineAppConfig } from "../types";
 
-export function initEmptySunshineApp(
-  appSunshine: Partial<SunshineAppConfigNew>,
-): SunshineAppConfigNew {
+export function initSunshineAppFromScannedGame(scannedGame: ScannedGamesConfig): SunshineAppConfig {
+  return {
+    name: scannedGame.gameDetails.name,
+    output: "",
+    cmd: scannedGame.gameDetails.cmd,
+    index: undefined,
+    "exclude-global-prep-cmd": undefined,
+    elevated: undefined,
+    "auto-detach": undefined,
+    "working-dir": "",
+    "wait-all": undefined,
+    "exit-timeout": 0,
+    "prep-cmd": [],
+    detached: [],
+    "image-path": scannedGame.gameDetails.imagePath,
+  };
+}
+
+export function initEmptySunshineApp(appSunshine: Partial<SunshineAppConfig>): SunshineAppConfig {
   return {
     name: appSunshine.name ?? "",
     output: appSunshine.output ?? "",

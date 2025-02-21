@@ -32,13 +32,13 @@ const PrepCommands: React.FC<{
       }}
     >
       <Typography variant="body1" gutterBottom>
-        {t("sunshineGameConfig.prepCommands")}
+        {t("sunshineAppConfig.prepCommands")}
       </Typography>
       {prepCmds.map((cmd, index) => (
         <Stack key={index} direction="row" spacing={2} alignItems="center">
           <TextField
             size="small"
-            label={t("sunshineGameConfig.doCommand")}
+            label={t("sunshineAppConfig.doCommand")}
             value={cmd.do}
             onChange={(e) => onChange(index, "do", e.target.value)}
             fullWidth
@@ -46,7 +46,7 @@ const PrepCommands: React.FC<{
           />
           <TextField
             size="small"
-            label={t("sunshineGameConfig.undoCommand")}
+            label={t("sunshineAppConfig.undoCommand")}
             value={cmd.undo}
             onChange={(e) => onChange(index, "undo", e.target.value)}
             fullWidth
@@ -59,7 +59,7 @@ const PrepCommands: React.FC<{
                 onChange={() => onChange(index, "elevated", !cmd.elevated)}
               />
             }
-            label={t("sunshineGameConfig.elevated")}
+            label={t("sunshineAppConfig.elevated")}
           />
           <IconButton onClick={() => onRemove(index)} size="small">
             <DeleteForever sx={{ color: "red" }} />

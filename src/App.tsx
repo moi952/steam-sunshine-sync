@@ -11,12 +11,12 @@ import "./i18n"; // Initialize i18n
 import { useThemeModeContext, ThemeModeProvider } from "./context/ThemeModeContext";
 import Menu from "./layout/Menu";
 import { SettingsProvider } from "./context/SettingsContext";
-import SelectedGames from "./components/SelectedGames";
-import ExportedGames from "./components/ExportedGames";
-import GameConfigPage from "./pages/GameConfigPage";
+import AppsToExportPage from "./pages/AppsToExportPage";
+import EditAppConfigPage from "./pages/EditAppConfigPage";
 import ScanGamesPage from "./pages/ScanGamesPage";
 import getTheme from "./theme/theme";
 import SunshinePage from "./pages/SunshinePage";
+import CreateAppConfigPage from "./pages/CreateAppConfigPage";
 
 const drawerWidthMini = 60;
 
@@ -87,10 +87,13 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/scan-games" element={<ScanGamesPage />} />
-              <Route path="/selected-games" element={<SelectedGames />} />
-              <Route path="/exported-games" element={<ExportedGames />} />
+              <Route path="/apps-to-export" element={<AppsToExportPage />} />
               <Route path="/sunshine-apps" element={<SunshinePage />} />
-              <Route path="/game-sunshine-edit/:uniqueId" element={<GameConfigPage />} />
+              <Route path="/app-sunshine-edit/:uniqueId" element={<EditAppConfigPage />} />
+              <Route
+                path="/app-sunshine-create/:scannedGameId?"
+                element={<CreateAppConfigPage />}
+              />
               <Route path="/settings" element={<SettingsPage />} />
             </Routes>
           </Box>

@@ -42,8 +42,6 @@ contextBridge.exposeInMainWorld("electronSteamLibraryScannerApi", {
 contextBridge.exposeInMainWorld("electronGameStorageApi", {
   getScannedGames: () => ipcRenderer.invoke("get-scanned-games"),
   setScannedGames: (games: any) => ipcRenderer.invoke("set-scanned-games", games),
-  getSelectedGames: () => ipcRenderer.invoke("get-selected-games"),
-  setSelectedGames: (games: any) => ipcRenderer.invoke("set-selected-games", games),
   getExportedGames: () => ipcRenderer.invoke("get-exported-games"),
   setExportedGames: (games: any) => ipcRenderer.invoke("set-exported-games", games),
 });

@@ -5,7 +5,6 @@ export type { GameCollections } from "./GameCollections";
 export type { ExportGameConfig } from "./ExportGameConfig";
 export type { ScannedGamesConfig } from "./ScannedGamesConfig";
 export type { SunshineGetAppsResponse } from "./SunshineApi";
-export type { SunshineAppConfig } from "./SunshineAppConfig";
-export type { SunshineAppConfigNew, PrepCommand } from "./SunshineAppConfigNew";
+export type { SunshineAppConfig, PrepCommand } from "./SunshineAppConfig";
 export type { SunshineConfig } from "./SunshineConfig";
 export type { SteamUserType } from "./SteamUserType";

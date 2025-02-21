@@ -1,6 +1,5 @@
 import { GameCollections, SunshineGetAppsResponse, SunshineConfig } from "./types";
 import { SunshineCreateAppResponse } from "./types/SunshineApi";
-import { SunshineAppConfig } from "./types/SunshineAppConfig";
 
 declare global {
   interface Window {
@@ -9,7 +8,7 @@ declare global {
       openFileDialog: () => Promise<string>;
       detectSunshinePath: () => Promise<string>;
       detectSteamPath: () => Promise<string>;
-      normalizePath: (filePath: string) => Promise<string>;
+      normalizePath: (_filePath: string) => Promise<string>;
     };
     electronSteamLibraryScannerApi: {
       getAllSteamGames: (_steamPath: string, _userId: string) => Promise<any>;
@@ -24,8 +23,6 @@ declare global {
     electronGameStorageApi: {
       getScannedGames: () => Promise<GameCollections["scannedGames"]>;
       setScannedGames: (_games: GameCollections["scannedGames"]) => Promise<void>;
-      getSelectedGames: () => Promise<GameCollections["selectedGames"]>;
-      setSelectedGames: (_games: GameCollections["selectedGames"]) => Promise<void>;
       getExportedGames: () => Promise<GameCollections["exportedGames"]>;
       setExportedGames: (_games: GameCollections["exportedGames"]) => Promise<void>;
     };

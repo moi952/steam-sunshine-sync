@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { ExportGameConfig } from "../types";
+import { SteamGame } from "steam-library-scanner";
+import { ExportGameConfig, SunshineAppConfig } from "../types";
+import { initEmptySunshineApp } from "../utils/sunshineAppHelper";
 
 interface ExportedGamesService {
   isLoading: boolean;
@@ -7,12 +9,33 @@ interface ExportedGamesService {
   errorMessage: string;
 
   getExportedGames: () => Promise<ExportGameConfig[]>;
+  getExportedGameById: (_uniqueId: string) => Promise<ExportGameConfig | undefined>;
   setExportedGames: (_games: ExportGameConfig[]) => Promise<void>;
   addExportedGameConfig: (_game: ExportGameConfig) => Promise<void>;
+  createExportedGameConfig: (
+    _sunshineAppConfig: SunshineAppConfig,
+    _gameDetails: SteamGame,
+    _scannedGameUniqueId?: string,
+  ) => Promise<ExportGameConfig>;
+  updateExportedGameConfig: (_uniqueId: string, _game: ExportGameConfig) => Promise<void>;
   removeExportedGameConfig: (_uniqueId: string) => Promise<void>;
   removeExportedGameConfigsByAppId: (_appId: string) => Promise<void>;
   removeAllExportedGames: () => Promise<void>;
   resetState: () => void;
+}
+
+function initNewExportedGame(
+  sunshineAppConfig: SunshineAppConfig,
+  gameDetails: SteamGame,
+): ExportGameConfig {
+  const newSunshineApp = initEmptySunshineApp(sunshineAppConfig);
+  return {
+    uniqueId: uuidv4(),
+    isExported: false,
+    appId: gameDetails.appId,
+    sunshineConfig: newSunshineApp,
+    gameInfos: gameDetails,
+  };
 }
 
 export const exportedGamesService: ExportedGamesService = {
@@ -36,14 +59,42 @@ export const exportedGamesService: ExportedGamesService = {
     }
   },
 
+  getExportedGameById: async (uniqueId: string) => {
+    const games = await exportedGamesService.getExportedGames();
+    return games.find((game) => game.uniqueId === uniqueId);
+  },
+
   setExportedGames: async (games: ExportGameConfig[]) => {
     await window.electronGameStorageApi.setExportedGames(games);
   },
 
+  createExportedGameConfig: async (
+    sunshineAppConfig: SunshineAppConfig,
+    gameDetails: SteamGame,
+    scannedGameUniqueId?: string,
+  ) => {
+    const newExportedGameConfig = initNewExportedGame(sunshineAppConfig, gameDetails);
+    if (scannedGameUniqueId) newExportedGameConfig.scannedGameUniqueId = scannedGameUniqueId;
+    const games = await exportedGamesService.getExportedGames();
+    const updatedGames = [...games, newExportedGameConfig];
+    await exportedGamesService.setExportedGames(updatedGames);
+
+    return newExportedGameConfig;
+  },
+
   addExportedGameConfig: async (game: ExportGameConfig) => {
-    game.uniqueId = uuidv4(); // Génère un identifiant unique
+    game.uniqueId = uuidv4();
     const games = await exportedGamesService.getExportedGames();
     const updatedGames = [...games, game];
+    await exportedGamesService.setExportedGames(updatedGames);
+  },
+
+  updateExportedGameConfig: async (uniqueId: string, updatedGame: ExportGameConfig) => {
+    const games = await exportedGamesService.getExportedGames();
+    const updatedGames = games.map((game) =>
+      game.uniqueId === uniqueId ? { ...game, ...updatedGame } : game,
+    );
+    console.log("updatedGames", updatedGames);
     await exportedGamesService.setExportedGames(updatedGames);
   },
 
