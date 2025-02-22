@@ -68,11 +68,8 @@ const ScannedGames: React.FC = () => {
         await steamService.scanGames(settings.steamPath!, settings.steamId!);
       const allScannedGames: SteamGame[] = [...loadedSteamGames, ...loadedNonSteamGames];
 
-      console.log("allScannedGames", allScannedGames);
-
       // Synchronize scanned games with stored games
       const syncResult = await ScannedGamesClient.syncScannedGames(allScannedGames);
-      console.log("syncResult", syncResult);
       if (!syncResult.success) throw syncResult.error || t("scannedGamesPage.errorScanningGames");
 
       if (syncResult.syncResult) await ScannedGamesClient.applySyncResult(syncResult.syncResult);

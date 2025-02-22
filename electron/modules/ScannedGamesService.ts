@@ -35,6 +35,10 @@ class ScannedGamesService {
     return Boolean(game.appId && game.appId !== "0");
   }
 
+  private static removeUndefinedFields(obj: any) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
   // Get the list of scanned games
   public getScannedGames(): { success: boolean; data: ScannedGamesConfig[]; error?: string } {
     try {
@@ -105,15 +109,16 @@ class ScannedGamesService {
         isSteamGame: ScannedGamesService.isSteamGame(game),
         gameDetails: game,
       }));
-
       const storedGamesMap = new Map(storedGames.map((game) => [game.id, game]));
       const newGamesMap = new Map(newGamesWithId.map((game) => [game.id, game]));
-
       const toAdd = newGamesWithId.filter((game) => !storedGamesMap.has(game.id));
       const toUpdate = newGamesWithId.filter(
         (game) =>
           storedGamesMap.has(game.id) &&
-          !isEqual(storedGamesMap.get(game.id)?.gameDetails, game.gameDetails),
+          !isEqual(
+            ScannedGamesService.removeUndefinedFields(storedGamesMap.get(game.id)?.gameDetails),
+            ScannedGamesService.removeUndefinedFields(game.gameDetails),
+          ),
       );
       const toRemove = storedGames.filter((game) => !newGamesMap.has(game.id));
 
