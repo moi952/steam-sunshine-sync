@@ -77,9 +77,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --network-timeout 1000000
 
-      - name: Debug Environment Variables
-        run: env | sort
-
       - name: Build project (Windows)
         if: runner.os == 'Windows'
         run: yarn electron:build --windows
