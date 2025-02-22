@@ -77,6 +77,9 @@ jobs:
       - name: Install dependencies
         run: yarn install --network-timeout 1000000
 
+      - name: Debug Environment Variables
+        run: env | sort
+
       - name: Build project (Windows)
         if: runner.os == 'Windows'
         run: yarn electron:build --windows
@@ -86,14 +89,14 @@ jobs:
 
       - name: Build project (macOS)
         if: runner.os == 'macOS'
-        run: yarn run electron:build --mac
+        run: yarn electron:build --mac
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Build project (Linux)
         if: runner.os == 'Linux'
-        run: yarn run electron:build --linux
+        run: yarn electron:build --linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}

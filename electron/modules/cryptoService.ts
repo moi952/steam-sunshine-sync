@@ -5,6 +5,13 @@ dotenv.config();
 
 const algorithm = "aes-256-cbc";
 const secret = process.env.ENCRYPTION_KEY;
+
+// Check if ENCRYPTION_KEY is present and alert if not
+if (!secret) {
+  console.error("ENCRYPTION_KEY is not set! The app will exit.");
+  process.exit(1); // Exit the app
+}
+
 const key = crypto.scryptSync(secret!, "salt", 32);
 
 /**

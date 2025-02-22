@@ -56,7 +56,8 @@
     "eslint": "eslint",
     "postinstall": "electron-builder install-app-deps",
     "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3000 && tsc -p electron && electron .\"",
-    "electron:build": "yarn build && tsc -p electron && electron-builder",
+    "electron:build-local": "dotenv -e .env -- cross-env ENCRYPTION_KEY=$ENCRYPTION_KEY yarn build && tsc -p electron && electron-builder",
+    "electron:build": "cross-env ENCRYPTION_KEY=$ENCRYPTION_KEY yarn build && tsc -p electron && electron-builder",
     "eject": "react-scripts eject",
     "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
     "eslint:write": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
@@ -95,7 +96,8 @@
     "productName": "Steam sunshine sync",
     "extends": null,
     "files": [
-      "build/**/*"
+      "build/**/*",
+      ".env"
     ],
     "directories": {
       "buildResources": "assets",
@@ -182,6 +184,7 @@
     "babel-jest": "^29.7.0",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0",
     "electron": "^34.1.1",
     "electron-builder": "^23.6.0",
     "eslint": "^8.57.1",
