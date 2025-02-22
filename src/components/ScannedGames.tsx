@@ -8,7 +8,8 @@ import { useSettings } from "../context/SettingsContext";
 import { steamService } from "../services/steamService";
 import ScannedGamesClient from "../services/scannedGamesClient";
 import GameCard, { gameStatus } from "./GameCard";
-import { ScannedGamesConfig } from "../types";
+import { SyncResult } from "../types";
+import { addFakeData } from "../utils/devFonctions";
 
 // Extend SteamGame with a syncStatus property
 interface LabeledSteamGame extends SteamGame {
@@ -55,6 +56,71 @@ const ScannedGames: React.FC = () => {
     if (steamCrendentialIsNotSet) setError(t("scannedGamesPage.steamPathOrIdNotSet"));
   }, []);
 
+  const processSyncResult = (syncResult: SyncResult) => {
+    if (!syncResult) {
+      console.error("syncResult is undefined");
+      return;
+    }
+
+    // Détecter les jeux supprimés
+    const removed = syncResult.toRemove.map((syncGame) => syncGame.gameDetails);
+
+    // Fonction pour récupérer le statut de synchronisation d'un jeu
+    const getSyncStatus = (game: SteamGame): gameStatus | undefined => {
+      if (syncResult.toAdd.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)) {
+        return "new"; // Assurez-vous que cela correspond à une valeur de l'énumération gameStatus
+      }
+      if (syncResult.toUpdate.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)) {
+        return "updated"; // Assurez-vous que cela correspond à une valeur de l'énumération gameStatus
+      }
+      return undefined;
+    };
+
+    // Filtrer les jeux pour supprimer ceux qui ont été retirés
+    const filteredSteamGames = steamGames.filter(
+      (game) => !removed.some((removedGame) => removedGame.cmd === game.cmd),
+    );
+
+    const filteredNonSteamGames = nonSteamGames.filter(
+      (game) => !removed.some((removedGame) => removedGame.cmd === game.cmd),
+    );
+
+    // Ajouter ou mettre à jour les jeux sans créer de doublons
+    const updatedSteamGames = [
+      ...filteredSteamGames.map((game) => ({
+        ...game,
+        syncStatus: getSyncStatus(game) || game.syncStatus, // Conserver l'ancien statut si non modifié
+      })),
+      ...syncResult.toAdd
+        .map((g) => g.gameDetails)
+        .filter(
+          (game) =>
+            game.appId && game.appId !== "0" && !filteredSteamGames.some((g) => g.cmd === game.cmd),
+        )
+        .map((game) => ({ ...game, syncStatus: "new" as gameStatus })), // Ici aussi, assurez-vous que `syncStatus` est bien un membre de `gameStatus`
+    ];
+
+    const updatedNonSteamGames = [
+      ...filteredNonSteamGames.map((game) => ({
+        ...game,
+        syncStatus: getSyncStatus(game) || game.syncStatus,
+      })),
+      ...syncResult.toAdd
+        .map((g) => g.gameDetails)
+        .filter(
+          (game) =>
+            (!game.appId || game.appId === "0") &&
+            !filteredNonSteamGames.some((g) => g.cmd === game.cmd),
+        )
+        .map((game) => ({ ...game, syncStatus: "new" as gameStatus })), // Idem ici
+    ];
+
+    // Mise à jour des états
+    setSteamGames(updatedSteamGames);
+    setNonSteamGames(updatedNonSteamGames);
+    setRemovedGames(removed);
+  };
+
   // Function to scan games and synchronize with stored data
   const scanSteamGames = async () => {
     if (steamCrendentialIsNotSet) {
@@ -63,118 +129,35 @@ const ScannedGames: React.FC = () => {
     }
     setLoading(true);
     try {
-      // Retrieve Steam and non-Steam games
       const { steamGames: loadedSteamGames, nonSteamGames: loadedNonSteamGames } =
         await steamService.scanGames(settings.steamPath!, settings.steamId!);
       const allScannedGames: SteamGame[] = [...loadedSteamGames, ...loadedNonSteamGames];
 
-      // Synchronize scanned games with stored games
       const syncResult = await ScannedGamesClient.syncScannedGames(allScannedGames);
-      if (!syncResult.success) throw syncResult.error || t("scannedGamesPage.errorScanningGames");
+      if (!syncResult.success) throw syncResult.error;
 
       if (syncResult.syncResult) await ScannedGamesClient.applySyncResult(syncResult.syncResult);
       else throw t("scannedGamesPage.errorScanningGames");
 
-      // Determine sync status for each game ("new" or "updated")
-      const getSyncStatus = (game: SteamGame): "new" | "updated" | "" => {
-        if (
-          syncResult.syncResult?.toAdd.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)
-        ) {
-          return "new";
-        }
-        if (
-          syncResult.syncResult?.toUpdate.some((syncGame) => syncGame.gameDetails.cmd === game.cmd)
-        ) {
-          return "updated";
-        }
-        return "";
-      };
-
-      // Add syncStatus label to each scanned game
-      const labeledGames = allScannedGames.map((game) => ({
-        ...game,
-        syncStatus: getSyncStatus(game),
-      })) as LabeledSteamGame[];
-
-      // Separate Steam and non-Steam games
-      const labeledSteamGames = labeledGames.filter((game) => game.appId && game.appId !== "0");
-      const labeledNonSteamGames = labeledGames.filter((game) => !game.appId || game.appId === "0");
-
-      // Filter removed games (exclude those that are updated)
-      const removed = syncResult.syncResult?.toRemove
-        .filter(
-          (syncGame) =>
-            !syncResult.syncResult?.toUpdate.some(
-              (updateGame) => updateGame.gameDetails.cmd === syncGame.gameDetails.cmd,
-            ),
-        )
-        .map((syncGame) => syncGame.gameDetails);
-
-      // Update states with the new data
-      setSteamGames(labeledSteamGames);
-      setNonSteamGames(labeledNonSteamGames);
-      setRemovedGames(removed);
+      processSyncResult(syncResult.syncResult);
     } catch (err) {
       console.error("Error scanning games:", err);
       setError(t("scannedGamesPage.errorScanningGames"));
-      alert(`${t("scannedGamesPage.errorScanningGames")}: ${steamService.errorMessage}`);
     } finally {
       setLoading(false);
     }
   };
 
   // Function to add fake data by merging with existing saved games
-  const addFakeData = async () => {
-    // Define two fake games: one Steam and one non-Steam
-    const fakeSteamGame: SteamGame = {
-      cmd: "fake-steam-game",
-      appId: "123456",
-      name: "Fake Steam Game",
-      imagePath: "",
-    };
-
-    const fakeNonSteamGame: SteamGame = {
-      cmd: "fake-nonsteam-game",
-      appId: "0",
-      name: "Fake Non Steam Game",
-      imagePath: "",
-    };
-
-    const fakeGames: SteamGame[] = [fakeSteamGame, fakeNonSteamGame];
-
-    // Stable unique ID generator (must match the one used in scannedGamesClient)
-    const generateUniqueId = (game: SteamGame): string => `${game.cmd}_${game.appId}`;
-    const isSteamGame = (game: SteamGame): boolean => Boolean(game.appId && game.appId !== "0");
-
-    setLoading(true);
+  const handleAddFakeData = async () => {
     try {
-      // Retrieve current saved games
-      const savedGames = await ScannedGamesClient.getScannedGames();
-
-      // Convert fake games to the StoredGame format
-      const newFakeStoredGames: ScannedGamesConfig[] = fakeGames.map((game) => ({
-        id: generateUniqueId(game),
-        uniqueId: generateUniqueId(game),
-        isSteamGame: isSteamGame(game),
-        gameDetails: game,
-      }));
-
-      // Merge new fake games with the existing saved games (avoid duplicates)
-      const mergedGames = [...savedGames.data];
-      newFakeStoredGames.forEach((fakeGame: ScannedGamesConfig) => {
-        if (!mergedGames.some((storedGame) => storedGame.id === fakeGame.id)) {
-          mergedGames.push(fakeGame);
-        }
-      });
-
-      // Save the merged list back to storage
-      await ScannedGamesClient.setScannedGames(mergedGames);
-
-      // Refresh UI by reloading saved games
-      await loadSavedGames();
+      setLoading(true);
+      const syncResult = await addFakeData();
+      await ScannedGamesClient.applySyncResult(syncResult);
+      processSyncResult(syncResult);
     } catch (err) {
       console.error("Error adding fake data:", err);
-      alert("Erreur lors de l'ajout de fausses données");
+      setError("Error adding wrong data");
     } finally {
       setLoading(false);
     }
@@ -189,7 +172,7 @@ const ScannedGames: React.FC = () => {
       setRemovedGames([]);
     } catch (err) {
       console.error("Error removing all games:", err);
-      alert("Erreur lors de la suppression de tous les jeux");
+      alert("Error deleting all games");
     } finally {
       setLoading(false);
     }
@@ -217,7 +200,12 @@ const ScannedGames: React.FC = () => {
         )}
         {process.env.REACT_APP_ENV === "dev" && (
           <>
-            <Button variant="contained" color="secondary" onClick={addFakeData} disabled={loading}>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleAddFakeData}
+              disabled={loading}
+            >
               Add fake datas
             </Button>
             <Button variant="contained" color="secondary" onClick={removeAll} disabled={loading}>

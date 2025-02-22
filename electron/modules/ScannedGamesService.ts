@@ -136,13 +136,26 @@ class ScannedGamesService {
     if (!syncResult || typeof syncResult !== "object") {
       return { success: false, error: "Invalid sync result format" };
     }
+
     try {
       const storedGames = this.getScannedGames().data;
+
+      // Add check to avoid duplicates
       const updatedGames = [
+        // Filter games to delete
         ...storedGames.filter((game) => !syncResult.toRemove.some((g) => g.id === game.id)),
+
+        // Add only non-existing games (by checking the `uniqueId`)
+        ...syncResult.toAdd.filter(
+          (newGame) =>
+            !storedGames.some((existingGame) => existingGame.uniqueId === newGame.uniqueId),
+        ),
+
+        // Update existing games
         ...syncResult.toUpdate,
-        ...syncResult.toAdd,
       ];
+
+      // Update configuration with new list
       this.config.set("scannedGames", updatedGames);
 
       return { success: true };
