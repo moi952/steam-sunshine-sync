@@ -82,18 +82,21 @@ jobs:
         run: yarn electron:build --windows
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Build project (macOS)
         if: runner.os == 'macOS'
         run: yarn run electron:build --mac
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Build project (Linux)
         if: runner.os == 'Linux'
         run: yarn run electron:build --linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
