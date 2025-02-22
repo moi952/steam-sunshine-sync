@@ -1,11 +1,5 @@
 import { SteamGame } from "steam-library-scanner";
-import {
-  GameCollections,
-  SunshineGetAppsResponse,
-  SunshineConfig,
-  ScannedGamesConfig,
-  SyncResult,
-} from "./types";
+import { SunshineGetAppsResponse, SunshineConfig, ScannedGamesConfig, SyncResult } from "./types";
 import { SunshineCreateAppResponse } from "./types/SunshineApi";
 import {
   ApplySyncResultResponse,
@@ -14,7 +8,7 @@ import {
   RemoveGamesResponse,
   SetScannedGamesResponse,
   SyncScannedGamesResponse,
-} from "./types/ScannedGamesResponse";
+} from "./types/ApiResponse/ScannedGamesResponse";
 
 export interface NewElectronGameStorageApi {
   getScannedGames: () => Promise<GetScannedGamesResponse>;
@@ -23,6 +17,27 @@ export interface NewElectronGameStorageApi {
   syncScannedGames: (_newGames: SteamGame[]) => Promise<SyncScannedGamesResponse>;
   applySyncResult: (_syncResult: SyncResult) => Promise<ApplySyncResultResponse>;
   removeGames: (_ids: string[]) => Promise<RemoveGamesResponse>;
+}
+
+export interface ElectronGamesToExportApi {
+  getGamesToExport: () => Promise<{ success: boolean; data?: any[]; error?: string }>;
+  getGameToExportById: (
+    _uniqueId: string,
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
+  setGamesToExport: (_games: any[]) => Promise<{ success: boolean; error?: string }>;
+  addGameToExportConfig: (_game: any) => Promise<{ success: boolean; error?: string }>;
+  createGameToExportConfig: (
+    _sunshineAppConfig: any,
+    _gameDetails: any,
+    _scannedGameUniqueId?: string,
+  ) => Promise<{ success: boolean; data?: any; error?: string }>;
+  updateGameToExportConfig: (
+    _uniqueId: string,
+    _updatedGame: any,
+  ) => Promise<{ success: boolean; error?: string }>;
+  removeGameToExportConfig: (_uniqueId: string) => Promise<{ success: boolean; error?: string }>;
+  removeGamesToExportByAppId: (_appId: string) => Promise<{ success: boolean; error?: string }>;
+  removeAllGamesToExport: () => Promise<{ success: boolean; error?: string }>;
 }
 
 declare global {
@@ -44,11 +59,8 @@ declare global {
       getSettings: () => Promise<Record<string, any>>;
       saveSettings: (_settings: Record<string, any>) => Promise<void>;
     };
-    electronGameStorageApi: {
-      getExportedGames: () => Promise<GameCollections["exportedGames"]>;
-      setExportedGames: (_games: GameCollections["exportedGames"]) => Promise<void>;
-    };
-    newElectronGameStorageApi: NewElectronGameStorageApi;
+    electronScannedGamesApi: NewElectronGameStorageApi;
+    electronGamesToExportApi: ElectronGamesToExportApi;
     electronSunshineApi: {
       getApps: () => Promise<SunshineGetAppsResponse>;
       createApp: (_appData: any) => Promise<SunshineCreateAppResponse>;

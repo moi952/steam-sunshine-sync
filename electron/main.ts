@@ -6,11 +6,11 @@ import dotenv from "dotenv";
 import {
   registerIpcAppSettings,
   registerIpcCryptoApi,
-  registerIpcGameStorage,
   registerIpcPathDectector,
   registerIpcSteamLibraryScanner,
   registerIpcSunshineApi,
   registerScannedGamesIpc,
+  registerIpcGamesToExport,
 } from "./ipcHandlers";
 
 dotenv.config();
@@ -64,7 +64,7 @@ registerIpcAppSettings();
 // Register IPC handlers for game library scanner
 registerIpcSteamLibraryScanner();
 // Register IPC handlers for game storage
-registerIpcGameStorage();
+registerIpcGamesToExport();
 registerScannedGamesIpc();
 
 // Initialize the Electron application

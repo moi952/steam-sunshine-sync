@@ -6,13 +6,12 @@ import {
   getSteamInstalledGames,
   getSteamUsers,
 } from "steam-library-scanner";
-import config from "./config";
-import { GameCollections } from "./types/GameCollections";
 import SettingsService from "./modules/settingsService";
 import { PathDetector } from "./modules/PathDetector";
 import { SunshineService } from "./modules/sunshineService";
 import { decrypt, encrypt } from "./modules/cryptoService";
 import { scannedGamesService } from "./modules/ScannedGamesService";
+import { gamesToExportService } from "./modules/GamesToExportService";
 
 const settingsService = new SettingsService();
 const pathDetector = new PathDetector();
@@ -83,12 +82,44 @@ export function registerScannedGamesIpc() {
   ipcMain.handle("removeGames", async (_, ids) => scannedGamesService.removeGames(ids));
 }
 
-export function registerIpcGameStorage() {
-  ipcMain.handle("get-exported-games", () => config.get("exportedGames"));
+export function registerIpcGamesToExport() {
+  ipcMain.handle("get-games-to-export", () => gamesToExportService.getGamesToExport());
 
-  ipcMain.handle("set-exported-games", (_event, games: GameCollections["exportedGames"]) => {
-    config.set("exportedGames", games);
-  });
+  ipcMain.handle("get-game-to-export-by-id", (_event, uniqueId: string) =>
+    gamesToExportService.getGameToExportById(uniqueId),
+  );
+
+  ipcMain.handle("set-games-to-export", (_event, games: any[]) =>
+    gamesToExportService.setGamesToExport(games),
+  );
+
+  ipcMain.handle("add-game-to-export-config", (_event, game: any) =>
+    gamesToExportService.addGameToExportConfig(game),
+  );
+
+  ipcMain.handle(
+    "create-game-to-export-config",
+    (_event, sunshineAppConfig: any, gameDetails: any, scannedGameUniqueId?: string) =>
+      gamesToExportService.createGameToExportConfig(
+        sunshineAppConfig,
+        gameDetails,
+        scannedGameUniqueId,
+      ),
+  );
+
+  ipcMain.handle("update-game-to-export-config", (_event, uniqueId: string, updatedGame: any) =>
+    gamesToExportService.updateGameToExportConfig(uniqueId, updatedGame),
+  );
+
+  ipcMain.handle("remove-game-to-export-config", (_event, uniqueId: string) =>
+    gamesToExportService.removeGameToExportConfig(uniqueId),
+  );
+
+  ipcMain.handle("remove-games-to-export-by-app-id", (_event, appId: string) =>
+    gamesToExportService.removeGamesToExportByAppId(appId),
+  );
+
+  ipcMain.handle("remove-all-games-to-export", () => gamesToExportService.removeAllGamesToExport());
 }
 
 export function registerIpcSunshineApi() {

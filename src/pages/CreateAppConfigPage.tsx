@@ -6,8 +6,8 @@ import { ArrowBack } from "@mui/icons-material";
 import { ScannedGamesConfig, SunshineAppConfig } from "../types";
 import AppConfig from "../components/AppConfig";
 import { initSunshineAppFromScannedGame } from "../utils/sunshineAppHelper";
-import { exportedGamesService } from "../services/exportedGamesService";
 import ScannedGamesClient from "../services/scannedGamesClient";
+import { GamesToExportClient } from "../services/gamesToExportClient";
 
 const CreateAppConfigPage = () => {
   const { t } = useTranslation();
@@ -56,14 +56,22 @@ const CreateAppConfigPage = () => {
 
   const handleSave = async (app: SunshineAppConfig) => {
     const newAppDetails: SunshineAppConfig = app;
-    const exportedGame = exportedGamesService.createExportedGameConfig(
+    const creatGameToExportResponse = GamesToExportClient.createGameToExportConfig(
       newAppDetails,
       scannedGame!.gameDetails,
       scannedGame?.uniqueId,
     );
 
-    console.log("exportedGame: ", exportedGame);
-    if ((await exportedGame).uniqueId) navigate(-1);
+    if (!(await creatGameToExportResponse).success) {
+      setErrorMsg("Failed to create app");
+      return;
+    }
+    if (!(await creatGameToExportResponse).data) {
+      setErrorMsg("Failed to create app");
+      return;
+    }
+    console.log("exportedGame: ", (await creatGameToExportResponse).data);
+    if ((await creatGameToExportResponse).data!.uniqueId) navigate(-1);
   };
 
   return (

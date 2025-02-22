@@ -1,5 +1,5 @@
-import { ScannedGamesConfig } from "./ScannedGamesConfig";
-import { SyncResult } from "./SyncResult";
+import { ScannedGamesConfig } from "../ScannedGamesConfig";
+import { SyncResult } from "../SyncResult";
 
 // Standard generic response with status and optional error message
 interface BaseResponse {

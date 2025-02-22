@@ -1,7 +1,7 @@
 import { SteamGame } from "steam-library-scanner";
 import { SunshineAppConfig } from "./SunshineAppConfig";
 
-export interface ExportGameConfig {
+export interface GameToExportConfig {
   uniqueId: string;
   scannedGameUniqueId?: string;
   isExported: boolean;

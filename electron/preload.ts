@@ -39,13 +39,33 @@ contextBridge.exposeInMainWorld("electronSteamLibraryScannerApi", {
     ipcRenderer.invoke("steam-library-scanner:getSteamUsers", steamPath),
 });
 
-//
-contextBridge.exposeInMainWorld("electronGameStorageApi", {
-  getExportedGames: () => ipcRenderer.invoke("get-exported-games"),
-  setExportedGames: (games: any) => ipcRenderer.invoke("set-exported-games", games),
+contextBridge.exposeInMainWorld("electronGamesToExportApi", {
+  getGamesToExport: () => ipcRenderer.invoke("get-games-to-export"),
+  getGameToExportById: (uniqueId: string) =>
+    ipcRenderer.invoke("get-game-to-export-by-id", uniqueId),
+  setGamesToExport: (games: any[]) => ipcRenderer.invoke("set-games-to-export", games),
+  addGameToExportConfig: (game: any) => ipcRenderer.invoke("add-game-to-export-config", game),
+  createGameToExportConfig: (
+    sunshineAppConfig: any,
+    gameDetails: any,
+    scannedGameUniqueId?: string,
+  ) =>
+    ipcRenderer.invoke(
+      "create-game-to-export-config",
+      sunshineAppConfig,
+      gameDetails,
+      scannedGameUniqueId,
+    ),
+  updateGameToExportConfig: (uniqueId: string, updatedGame: any) =>
+    ipcRenderer.invoke("update-game-to-export-config", uniqueId, updatedGame),
+  removeGameToExportConfig: (uniqueId: string) =>
+    ipcRenderer.invoke("remove-game-to-export-config", uniqueId),
+  removeGamesToExportByAppId: (appId: string) =>
+    ipcRenderer.invoke("remove-games-to-export-by-app-id", appId),
+  removeAllGamesToExport: () => ipcRenderer.invoke("remove-all-games-to-export"),
 });
 
-contextBridge.exposeInMainWorld("newElectronGameStorageApi", {
+contextBridge.exposeInMainWorld("electronScannedGamesApi", {
   getScannedGames: () => ipcRenderer.invoke("getScannedGames"),
   getScannedGameById: (uniqueId: string) => ipcRenderer.invoke("getScannedGameById", uniqueId),
   setScannedGames: (games: any) => ipcRenderer.invoke("setScannedGames", games),

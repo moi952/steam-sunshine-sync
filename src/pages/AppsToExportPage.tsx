@@ -4,17 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { DeleteForever, EditNote } from "@mui/icons-material";
 import { v4 as uuidv4 } from "uuid";
-import { ExportGameConfig, ScannedGamesConfig } from "../types";
+import { GameToExportConfig, ScannedGamesConfig } from "../types";
 import GameDropdown from "../components/GameDropdown";
-import { exportedGamesService } from "../services/exportedGamesService";
 import GameCard from "../components/GameCard";
 import ScannedGamesClient from "../services/scannedGamesClient";
+import { GamesToExportClient } from "../services/gamesToExportClient";
 
 const AppsToExportPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [exportedGames, setExportedGames] = useState<ExportGameConfig[]>([]);
+  const [exportedGames, setExportedGames] = useState<GameToExportConfig[]>([]);
   const [scannedGames, setScannedGames] = useState<ScannedGamesConfig[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -22,9 +22,13 @@ const AppsToExportPage: React.FC = () => {
     const fetchExportedGames = async () => {
       setLoading(true);
       try {
-        const games = await exportedGamesService.getExportedGames();
-        console.log("Exported games", games);
-        setExportedGames(games);
+        const gamesToExportResponse = await GamesToExportClient.getGamesToExport();
+        if (gamesToExportResponse.success && gamesToExportResponse.data) {
+          console.log("Exported games", gamesToExportResponse);
+          setExportedGames(gamesToExportResponse.data || []);
+        } else {
+          console.error("Invalid response structure", gamesToExportResponse);
+        }
       } catch (error) {
         console.error("Error fetching exported games:", error);
       } finally {
@@ -58,9 +62,20 @@ const AppsToExportPage: React.FC = () => {
 
   const removeExportedGameConfig = async (uniqueId: string) => {
     try {
-      await exportedGamesService.removeExportedGameConfig(uniqueId);
-      const games = await exportedGamesService.getExportedGames();
-      setExportedGames(games);
+      const removeGameResponse = await GamesToExportClient.removeGameToExportConfig(uniqueId);
+      if (!removeGameResponse.success) {
+        console.error("Error removing exported game config:", removeGameResponse.error);
+        return;
+      }
+      const gamesToExportResponse = await GamesToExportClient.getGamesToExport();
+      if (!gamesToExportResponse.success || !gamesToExportResponse.data) {
+        console.error(
+          "Error fetching games to export after removing game:",
+          gamesToExportResponse.error,
+        );
+        return;
+      }
+      setExportedGames(gamesToExportResponse.data);
     } catch (error) {
       console.error("Error removing exported game config:", error);
     }

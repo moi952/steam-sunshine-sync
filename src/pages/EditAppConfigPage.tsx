@@ -3,22 +3,27 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Alert, Box, IconButton, Typography } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import { ExportGameConfig, SunshineAppConfig } from "../types";
-import { exportedGamesService } from "../services/exportedGamesService";
+import { GameToExportConfig, SunshineAppConfig } from "../types";
 import AppConfig from "../components/AppConfig";
+import { GamesToExportClient } from "../services/gamesToExportClient";
 
 const EditAppConfigPage = () => {
   const { t } = useTranslation();
   const { uniqueId } = useParams<{ uniqueId: string }>();
   const navigate = useNavigate();
-  const [appDetails, setAppDetails] = useState<ExportGameConfig | null>(null);
+  const [appDetails, setAppDetails] = useState<GameToExportConfig | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const fetchAppsDetails = async () => {
     try {
-      const apps = await exportedGamesService.getExportedGames();
-      const app = apps.find((a) => a.uniqueId === uniqueId) || null;
-      setAppDetails(app);
+      const gamesToExportResponse = await GamesToExportClient.getGamesToExport();
+      if (gamesToExportResponse.success && gamesToExportResponse.data) {
+        console.log("Exported games", gamesToExportResponse);
+        const app = gamesToExportResponse.data.find((a) => a.uniqueId === uniqueId) || null;
+        setAppDetails(app);
+      } else {
+        console.error("Invalid response structure", gamesToExportResponse);
+      }
     } catch (error) {
       console.error("Error fetching apps details:", error);
     }
@@ -34,13 +39,22 @@ const EditAppConfigPage = () => {
 
   const handleSave = async (app: SunshineAppConfig) => {
     console.log("app", app);
-    const newAppDetails: ExportGameConfig = { ...appDetails, sunshineConfig: app };
+    const newAppDetails: GameToExportConfig = { ...appDetails, sunshineConfig: app };
     console.log("newAppDetails", newAppDetails);
     try {
-      await exportedGamesService.updateExportedGameConfig(appDetails.uniqueId, newAppDetails);
-      fetchAppsDetails();
-    } catch (err) {
-      setErrorMsg(`Error fetching apps: ${err instanceof Error ? err.message : "Unknown error"}`);
+      const updateGameToExportConfigResponse = await GamesToExportClient.updateGameToExportConfig(
+        appDetails.uniqueId,
+        newAppDetails,
+      );
+      if (updateGameToExportConfigResponse.success) {
+        fetchAppsDetails();
+      } else {
+        setErrorMsg("Failed to update app");
+      }
+    } catch (error) {
+      setErrorMsg(
+        `Error updating app: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   };
 

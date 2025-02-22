@@ -1,4 +1,5 @@
 import { Select, MenuItem, Box, Typography } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 import { ScannedGamesConfig } from "../types";
 
 interface GameDropdownProps {
@@ -44,7 +45,7 @@ const GameDropdown = ({ games, selectedGame, onChange, placeholder }: GameDropdo
         {placeholder}
       </MenuItem>
       {games.map((game) => (
-        <MenuItem key={game.uniqueId} value={game.uniqueId}>
+        <MenuItem key={uuidv4()} value={game.uniqueId}>
           {getImage(game.gameDetails.imagePath, game.gameDetails.name)}
           {game.gameDetails.name}
         </MenuItem>
