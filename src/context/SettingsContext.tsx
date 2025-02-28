@@ -22,12 +22,14 @@ export type Settings = {
 type SettingsContextType = {
   settings: Settings;
   saveSettings: (_newSettings: Partial<Settings>) => void;
+  isLoading: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState<Settings>({ firstLaunch: true, themeMode: "system" });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -36,6 +38,8 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
         setSettings((prev) => ({ ...prev, ...loadedSettings }));
       } catch (error) {
         console.error("Failed to load settings:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -51,7 +55,10 @@ export const SettingsProvider: React.FC<{ children: ReactNode }> = ({ children }
     });
   }, []);
 
-  const value = useMemo(() => ({ settings, saveSettings }), [settings, saveSettings]);
+  const value = useMemo(
+    () => ({ settings, saveSettings, isLoading }),
+    [settings, saveSettings, isLoading],
+  );
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 };

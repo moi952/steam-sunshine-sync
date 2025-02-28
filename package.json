@@ -44,7 +44,7 @@
     "eslint": "eslint",
     "postinstall": "electron-builder install-app-deps",
     "electron:dev": "concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3000 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3000 && tsc -p electron && electron .\"",
-    "electron:build": "yarn build && tsc -p electron && electron-builder",
+    "electron:build": "yarn generate-icons && yarn build && tsc -p electron && electron-builder",
     "eject": "react-scripts eject",
     "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
     "eslint:write": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
@@ -52,7 +52,8 @@
     "eslint:check": "eslint \"src/**/*.{js,jsx,ts,tsx}\" \"electron/**/*.{js,jsx,ts,tsx}\"",
     "update-release": "node .github/scripts/update-version.js",
     "zipPortable:win": "powershell -Command \"if ($env:OS -eq 'Windows_NT') { Compress-Archive -Path dist/win-unpacked/* -DestinationPath dist/$${env:npm_package_build_productName}-$${env:npm_package_version}-win-x64-portable.zip } else { Write-Host 'Unsupported OS' }\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "generate-icons": "node scripts/generate-icons.js"
   },
   "lint-staged": {
     "*.js": [

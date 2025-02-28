@@ -1,16 +1,26 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Container, Button, Paper } from "@mui/material";
+import { Box, Typography, Container, Button, Paper, CircularProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../context/SettingsContext";
 
 const HomePage: React.FC = () => {
-  const { settings } = useSettings();
+  const { settings, isLoading } = useSettings();
   const { t } = useTranslation();
 
   useEffect(() => {
     console.log("firstLaunch : ", settings.firstLaunch);
   }, [settings]);
+
+  if (isLoading) {
+    return (
+      <Container
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}
+      >
+        <CircularProgress />
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ mt: 8 }}>

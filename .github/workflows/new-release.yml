@@ -89,6 +89,18 @@ jobs:
         run: |
           echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" > .env
 
+      - name: Install ImageMagick (Windows)
+        if: runner.os == 'Windows'
+        run: choco install imagemagick --version=7.0.11-1 -y
+
+      - name: Install ImageMagick (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y imagemagick
+
+      - name: Install ImageMagick (macOS)
+        if: runner.os == 'macos-latest' || runner.os == 'macos-14'
+        run: brew install imagemagick
+
       - name: Build project (Windows)
         if: runner.os == 'Windows'
         run: yarn electron:build --windows

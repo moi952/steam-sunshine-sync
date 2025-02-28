@@ -12,5 +12,14 @@
     "buildResources": "assets",
     "output": "dist"
   },
-  "artifactName": "${productName}-${version}-${arch}.${ext}"
+  "artifactName": "${productName}-${version}-${arch}.${ext}",
+  "mac": {
+    "icon": "assets/icon.icns"
+  },
+  "win": {
+    "icon": "assets/icon.ico"
+  },
+  "linux": {
+    "icon": "assets/icon.png"
+  }
 }
