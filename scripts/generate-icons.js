@@ -1,6 +1,7 @@
 const fs = require("fs-extra");
 const { execSync } = require("child_process");
 const path = require("path");
+const os = require("os");
 
 const SOURCE_ICON = "public/logo-512x512.png";
 const ASSETS_DIR = "assets";
@@ -14,6 +15,11 @@ const ICON_SIZES = [16, 32, 64, 128, 256, 512, 1024];
 const WINDOWS_SIZES = [16, 24, 32, 48, 64, 128, 256];
 
 async function generateMacOSIcons() {
+  if (os.platform() !== "darwin") {
+    console.warn("Skipping macOS icon generation: not running on macOS.");
+    return;
+  }
+
   try {
     await fs.ensureDir(ICONSET_DIR);
 
@@ -57,7 +63,7 @@ async function generateWindowsIcons() {
       execSync(`sips -z ${size} ${size} ${SOURCE_ICON} --out ${outputFile}`);
     }
 
-    // Vérification si ImageMagick est installé
+    // Checking if ImageMagick is installed
     try {
       execSync("magick -version");
     } catch (error) {
