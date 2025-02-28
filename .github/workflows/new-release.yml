@@ -98,14 +98,14 @@ jobs:
 
       - name: Build project (macOS Intel)
         if: matrix.platform == 'mac-intel'
-        run: yarn electron:build --mac --x64
+        run: yarn electron:build --mac --config electron-builder.x64.json
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Build project (macOS ARM)
         if: matrix.platform == 'mac-arm'
-        run: yarn electron:build --mac --arm64
+        run: yarn electron:build --mac --config electron-builder.arm64.json
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false

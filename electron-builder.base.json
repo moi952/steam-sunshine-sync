@@ -1,0 +1,16 @@
+{
+  "appId": "com.example.steam-sunshine-sync",
+  "productName": "Steam sunshine sync",
+  "files": ["build/**/*"],
+  "extraResources": [
+    {
+      "from": ".env",
+      "to": ".env"
+    }
+  ],
+  "directories": {
+    "buildResources": "assets",
+    "output": "dist"
+  },
+  "artifactName": "${productName}-${version}-${arch}.${ext}"
+}

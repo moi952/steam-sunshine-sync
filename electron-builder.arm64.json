@@ -1,0 +1,17 @@
+{
+  "extends": "./electron-builder.base.json",
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["arm64"]
+      }
+    ],
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "darkModeSupport": true
+  },
+  "dmg": {
+    "title": "${productName} ${version} ${arch}"
+  }
+}

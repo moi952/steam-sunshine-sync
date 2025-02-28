@@ -79,54 +79,18 @@
     ]
   },
   "build": {
-    "appId": "com.example.steam-sunshine-sync",
-    "productName": "Steam sunshine sync",
-    "extends": null,
-    "files": [
-      "build/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": ".env",
-        "to": ".env"
-      }
-    ],
-    "directories": {
-      "buildResources": "assets",
-      "output": "dist"
-    },
+    "extends": "./electron-builder.base.json",
     "win": {
       "target": [
         "nsis",
         "portable"
-      ],
-      "artifactName": "${productName}-${version}.${ext}"
-    },
-    "mac": {
-      "target": [
-        {
-          "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
-        }
-      ],
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "darkModeSupport": true
-    },
-    "dmg": {
-      "artifactName": "${productName}-${version}-${arch}.${ext}",
-      "title": "${productName} ${version} ${arch}"
+      ]
     },
     "linux": {
       "target": [
         "AppImage",
         "deb"
-      ],
-      "artifactName": "${productName}-${version}.${ext}"
+      ]
     },
     "nsis": {
       "oneClick": false,
