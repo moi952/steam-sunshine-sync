@@ -13,7 +13,23 @@ import {
   registerIpcGamesToExport,
 } from "./ipcHandlers";
 
-dotenv.config();
+// Configuration of dotenv depending on whether you are in dev or prod
+const envPath = app.isPackaged
+  ? path.join(process.resourcesPath, ".env")
+  : path.resolve(process.cwd(), ".env");
+
+console.error("App is packaged:", app.isPackaged);
+console.error("Env path:", envPath);
+console.error("Current working directory:", process.cwd());
+if (app.isPackaged) {
+  console.error("Resources path:", process.resourcesPath);
+}
+
+dotenv.config({
+  path: envPath,
+});
+
+console.error("ENCRYPTION_KEY:", process.env.ENCRYPTION_KEY);
 
 let mainWindow: BrowserWindow | null = null;
 

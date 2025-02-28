@@ -58,7 +58,15 @@ jobs:
     needs: create-release
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            platform: windows
+          - os: ubuntu-latest
+            platform: linux
+          - os: macos-latest
+            platform: mac-intel
+          - os: macos-14
+            platform: mac-arm
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
@@ -69,13 +77,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
 
       - name: Install Yarn
         run: npm install -g yarn
 
       - name: Install dependencies
-        run: yarn install --network-timeout 1000000
+        run: yarn install --frozen-lockfile --network-timeout 1000000
+
+      - name: Create .env file
+        run: |
+          echo "ENCRYPTION_KEY=${{ secrets.ENCRYPTION_KEY }}" > .env
 
       - name: Build project (Windows)
         if: runner.os == 'Windows'
@@ -84,16 +96,23 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
 
-      - name: Build project (macOS)
-        if: runner.os == 'macOS'
-        run: yarn run electron:build --mac
+      - name: Build project (macOS Intel)
+        if: matrix.platform == 'mac-intel'
+        run: yarn electron:build --mac --x64
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Build project (macOS ARM)
+        if: matrix.platform == 'mac-arm'
+        run: yarn electron:build --mac --arm64
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Build project (Linux)
         if: runner.os == 'Linux'
-        run: yarn run electron:build --linux
+        run: yarn electron:build --linux
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}

@@ -1,6 +1,6 @@
 {
   "name": "steam-sunshine-sync",
-  "version": "0.3.2-alpha.2",
+  "version": "0.3.0",
   "author": {
     "name": "Charly MANAI",
     "email": "charlydu95@hotmail.fr"
@@ -15,21 +15,10 @@
     "@mui/icons-material": "^6.4.3",
     "@mui/material": "^6.4.3",
     "@node-steam/vdf": "^2.2.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/react-hooks": "^8.0.1",
-    "@testing-library/user-event": "^14.4.3",
-    "@types/electron-devtools-installer": "^2.2.2",
-    "@types/jest": "^29.4.0",
-    "@types/node": "^22.13.1",
-    "@types/react-dom": "^18.0.11",
-    "@typescript-eslint/parser": "^8.24.0",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "drivelist": "^12.0.2",
     "electron-conf": "^1.2.1",
-    "electron-devtools-installer": "^3.2.0",
-    "electron-reload": "^1.5.0",
     "fs-extra": "^11.3.0",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
@@ -45,8 +34,7 @@
     "semver": "^7.7.1",
     "simple-vdf": "^1.1.1",
     "steam-library-scanner": "^1.2.1",
-    "uuid": "^11.0.5",
-    "web-vitals": "^3.1.1"
+    "uuid": "^11.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -97,6 +85,12 @@
     "files": [
       "build/**/*"
     ],
+    "extraResources": [
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
     "directories": {
       "buildResources": "assets",
       "output": "dist"
@@ -110,9 +104,22 @@
     },
     "mac": {
       "target": [
-        "dmg"
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
-      "artifactName": "${productName}-${version}.${ext}"
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "darkModeSupport": true
+    },
+    "dmg": {
+      "artifactName": "${productName}-${version}-${arch}.${ext}",
+      "title": "${productName} ${version} ${arch}"
     },
     "linux": {
       "target": [
@@ -153,6 +160,10 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.26.8",
     "@babel/preset-typescript": "^7.26.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/user-event": "^14.4.3",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.6.8",
     "@types/babel__template": "^7.4.4",
@@ -163,28 +174,36 @@
     "@types/connect-history-api-fallback": "^1.5.4",
     "@types/cookie": "^1.0.0",
     "@types/debug": "^4.1.12",
+    "@types/electron-devtools-installer": "^2.2.2",
     "@types/estree": "^1.0.6",
+    "@types/jest": "^29.4.0",
     "@types/jsonfile": "^6.1.4",
     "@types/lodash": "^4.17.15",
     "@types/nedb": "^1.8.16",
+    "@types/node": "^22.13.1",
     "@types/prettier": "^3.0.0",
     "@types/prop-types": "^15.7.14",
     "@types/q": "^1.5.8",
     "@types/qs": "^6.9.18",
     "@types/range-parser": "^1.2.7",
     "@types/react": "^19.0.8",
+    "@types/react-dom": "^18.0.11",
     "@types/recursive-readdir": "^2.2.4",
     "@types/send": "^0.17.4",
     "@types/serve-static": "^1.15.7",
     "@types/stack-utils": "^2.0.3",
     "@types/trusted-types": "^2.0.7",
     "@types/yauzl": "^2.10.3",
+    "@typescript-eslint/parser": "^8.24.0",
     "babel-jest": "^29.7.0",
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
+    "dotenv-cli": "^8.0.0",
     "electron": "^34.1.1",
     "electron-builder": "^23.6.0",
-    "eslint": "^8.57.1",
+    "electron-devtools-installer": "^3.2.0",
+    "electron-reload": "^1.5.0",
+    "eslint": "^8.56.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "^2.31.0",
@@ -195,6 +214,7 @@
     "lint-staged": "^15.4.3",
     "prettier": "^3.5.0",
     "typescript": "^5.7.3",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.0.1",
+    "web-vitals": "^3.1.1"
   }
 }
